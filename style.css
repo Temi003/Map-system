@@ -1,0 +1,1273 @@
+<<<<<<< Updated upstream
+
+/* General body styling */
+body {
+  font-family: Arial, sans-serif; /* Set the font family for the whole page */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  background-color: white; /* Set the background color */
+  height: 100%; /* Full height */
+}
+
+/* Menu styling */
+.menu {
+  width: 100%; /* Full width */
+  height: 14vh; /* Height relative to viewport height */
+  background-color: white; /* Background color */
+  display: flex; /* Flexbox layout */
+  justify-content: space-between; /* Space items evenly */
+  border-bottom: 1px solid rgba(128, 128, 128, 0.80); /* Border at the bottom */
+}
+
+/* Logo section within the menu */
+.logo {
+  display: flex; /* Flexbox layout */
+}
+
+/* Logo heading styling */
+.logo h2 {
+  font-size: 30px; /* Font size */
+  color: #0099cc; /* Font color */
+}
+
+/* Logo image styling */
+.logo img {
+  width: 100px; /* Width of the logo image */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Navigation menu styling */
+ul {
+  display: flex; /* Flexbox layout for list items */
+  margin: 2.5%; /* Margin around the list */
+  gap: 20px; /* Gap between items */
+}
+
+/* List item styling */
+ul li {
+  list-style: none; /* Remove default list styling */
+}
+
+/* Link styling within list items */
+ul li a {
+  color: #0099cc; /* Link color */
+  font-size: 18px; /* Font size */
+  text-decoration: none; /* Remove underline */
+}
+
+/* Link hover effect */
+ul li a:hover {
+  text-decoration: none; /* Maintain no underline on hover */
+}
+
+/* Main section styling */
+.main {
+  position: relative; /* Position relative to contain absolutely positioned children */
+  display: flex; /* Flexbox layout */
+  flex-direction: column; /* Stack items vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: flex-start; /* Align items to the start */
+  height: 86vh; /* Height relative to viewport height */
+  text-align: left; /* Align text to the left */
+  background-color: rgba(245, 245, 236, 0.67); /* Background color with transparency */
+  padding: 20px; /* Padding around content */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+  overflow: hidden; /* Hide overflow content */
+  z-index: 0; /* Z-index for stacking context */
+}
+
+/* Main content styling */
+.main-content {
+  font-weight: 400; /* Normal font weight */
+}
+
+/* Main headings styling */
+.main h1, .main h2 {
+  font-size: 40px; /* Font size */
+  margin-bottom: 10px; /* Margin below heading */
+  font-weight: bold; /* Bold font weight */
+  color: #0099cc; /* Font color */
+}
+
+/* Additional styling for h1 */
+.main h1 {
+  margin-bottom: 8px; /* Adjusted bottom margin */
+}
+
+/* Additional styling for h2 */
+.main h2 {
+  margin-top: 0; /* Removed top margin */
+}
+
+/* Paragraph styling within the main section */
+.main p {
+  font-size: 20px; /* Font size */
+  margin-bottom: 20px; /* Margin below paragraph */
+  color: rgb(7, 7, 7); /* Font color */
+  font-weight: normal; /* Normal font weight */
+}
+
+/* Styling for smaller paragraphs */
+.main p1 {
+  font-size: 15px; /* Font size */
+  margin-bottom: 15px; /* Margin below paragraph */
+  margin-left: 20px; /* Left margin */
+  color: black; /* Font color */
+  font-weight: normal; /* Normal font weight */
+}
+
+/* Button styling for locate button */
+.main .btn-locate {
+  background-color: #00bfff; /* Background color */
+  color: black; /* Text color */
+  padding: 15px 30px; /* Padding inside button */
+  border: none; /* Remove border */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 20px; /* Font size */
+  text-decoration: none; /* Remove text decoration */
+  cursor: pointer; /* Pointer cursor */
+  margin-top: 20px; /* Margin above button */
+}
+
+/* Hover effect for locate button */
+.main .btn-locate:hover {
+  background-color: #0099cc; /* Change background color on hover */
+}
+
+/* General button styling */
+.button {
+  background-color: #00bfff; /* Background color */
+  color: black; /* Text color */
+  padding: 15px 30px; /* Padding inside button */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 20px; /* Font size */
+  cursor: pointer; /* Pointer cursor */
+  position: relative; /* Relative positioning */
+  left: 77%; /* Align to the right */
+  transform: translateX(-50%); /* Center horizontally */
+  margin-top: 20px; /* Margin above button */
+}
+
+/* Page heading styling */
+.page-heading {
+  text-align: center; /* Center align text */
+  font-size: 30px; /* Font size */
+  color: #0099cc; /* Font color */
+  margin: 20px 0; /* Margin above and below */
+}
+
+/* Hover effect for map button */
+.map-button:hover {
+  background-color: #017ba3; /* Change background color on hover */
+}
+
+/* Styling for the menu main section */
+.menu-main {
+  position: relative; /* Relative positioning */
+  display: flex; /* Flexbox layout */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  height: 86vh; /* Height relative to viewport height */
+  background-color: white; /* Background color */
+  overflow: hidden; /* Hide overflow content */
+}
+
+/* Background video styling */
+.bg-video {
+  position: absolute; /* Absolute positioning */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  object-fit: cover; /* Cover the container */
+  z-index: -1; /* Stack below other content */
+}
+
+/* Menu options styling */
+.menu-options {
+  display: flex; /* Flexbox layout */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  z-index: 1; /* Stack above background video */
+  margin-left: 30%; /* Margin to the left */
+}
+
+/* Menu options heading styling */
+.menu-options h1 {
+  font-size: 50px; /* Font size */
+  margin-bottom: 20px; /* Margin below heading */
+  color: #0099cc; /* Font color */
+  font-weight: bold; /* Bold font weight */
+}
+
+/* Menu button styling */
+.menu-button {
+  background-color: #00bfff; /* Background color */
+  color: black; /* Text color */
+  padding: 20px 40px; /* Padding inside button */
+  border: none; /* Remove border */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 25px; /* Font size */
+  cursor: pointer; /* Pointer cursor */
+  margin-bottom: 20px; /* Margin below button */
+  font-weight: bold; /* Bold font weight */
+  transition: 2s; /* Transition duration */
+}
+
+/* Hover effect for menu button */
+.menu-button:hover {
+  background-color: #0099cc; /* Change background color on hover */
+}
+
+/* Map styling */
+#map {
+  width: 100%; /* Full width */
+  height: 82vh; /* Height relative to viewport height */
+  border-radius: 5px; /* Rounded corners */
+  border: 2px solid black; /* Border styling */
+  position: absolute; /* Absolute positioning */
+  display: flex; /* Flexbox layout */
+  margin: 0; /* Remove margin */
+  padding: 0; /* Remove padding */
+}
+
+/* Container for the map */
+.map-container {
+  position: relative; /* Relative positioning */
+  width: 99.5%; /* Width of the container */
+  height: 100%; /* Full height */
+}
+
+/* Directions control styling */
+.mapboxgl-ctrl-directions {
+  position: absolute; /* Absolute positioning */
+  top: 10px; /* Top alignment */
+  left: 10px; /* Left alignment */
+  width: 75%; /* Width of the control */
+  height: 50%; /* Height of the control */
+}
+
+/* Hamburger menu styling (hidden by default) */
+.hamburger {
+  display: none; /* Hidden by default */
+  background: none; /* No background */
+  border: none; /* No border */
+  font-size: 30px; /* Font size */
+  cursor: pointer
+
+; /* Pointer cursor */
+  color: #0099cc; /* Text color */
+  margin-left: 50px; /* Margin to the left */
+}
+
+/* Side menu styling */
+.side-menu {
+  height: 100%; /* Full height */
+  width: 0; /* Width 0 (hidden by default) */
+  position: fixed; /* Fixed positioning */
+  z-index: 1; /* Stack above content */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  background-color: whitesmoke; /* Background color */
+  overflow-x: hidden; /* Hide horizontal overflow */
+  transition: 0.5s; /* Transition duration */
+  padding-top: 60px; /* Padding at the top */
+  border-right: 1px solid #0099cc; /* Right border */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3); /* Box shadow */
+}
+
+/* Links within the side menu */
+.side-menu a {
+  padding: 8px 8px 8px 32px; /* Padding inside links */
+  text-decoration: none; /* Remove underline */
+  font-size: 25px; /* Font size */
+  color: #0099cc; /* Text color */
+  display: block; /* Block display */
+  transition: 0.3s; /* Transition duration */
+}
+
+/* Hover effect for side menu links */
+.side-menu a:hover {
+  color: #000; /* Change color on hover */
+}
+
+/* Close button styling in the side menu */
+.side-menu .closebtn {
+  position: absolute; /* Absolute positioning */
+  top: 10px; /* Top alignment */
+  right: 25px; /* Right alignment */
+  font-size: 36px; /* Font size */
+  margin-left: 50px; /* Margin to the left */
+}
+
+/* Background video styling */
+.background-video {
+  position: absolute; /* Absolute positioning */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  object-fit: cover; /* Cover the container */
+  z-index: -1; /* Stack below other content */
+}
+
+/* Login container styling */
+.login-container, .signup-container {
+  background-color: whitesmoke; /* Background color */
+  padding: 20px; /* Padding inside container */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+  border-radius: 8px; /* Rounded corners */
+  text-align: center; /* Center text */
+  justify-content: center; /* Center content */
+  margin: 0 auto; /* Center horizontally */
+}
+
+/* Login container specific styling */
+.login-container {
+  width: 450px; /* Width */
+  height: 90vh; /* Height relative to viewport height */
+}
+
+/* Signup container specific styling */
+.signup-container {
+  width: 700px; /* Width */
+  height: 109vh; /* Height relative to viewport height */
+}
+/* .message.success {
+  color: green;
+  background-color: #e6ffe6;
+  border: 1px solid green;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.message.error {
+  color: red;
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 10px;
+} */
+
+
+
+/* Grouping items */
+.group {
+  display: flex; /* Flexbox layout */
+  gap: 10px; /* Gap between items */
+  justify-content: space-evenly; /* Space items evenly */
+  margin-top: 20px; /* Margin above group */
+}
+
+/* Row styling */
+.row {
+  display: flex; /* Flexbox layout */
+  gap: 15px; /* Gap between items */
+  margin-bottom: 15px; /* Margin below row */
+}
+
+/* Input group within a row */
+.row .input-group {
+  flex: 1; /* Flex grow */
+}
+
+/* Input group styling */
+.input-group {
+  margin-bottom: 15px; /* Margin below group */
+  text-align: left; /* Align text to the left */
+}
+
+/* Label styling within input group */
+.input-group label {
+  display: block; /* Block display */
+  margin-bottom: 8px; /* Margin below label */
+}
+
+/* Input and select styling within input group */
+.input-group input, .input-group select {
+  width: 100%; /* Full width */
+  padding: 10px; /* Padding inside input/select */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+}
+
+/* Select element specific styling */
+.input-group select {
+  margin-top: 4px; /* Top margin */
+}
+
+/* General button styling */
+button {
+  width: 100%; /* Full width */
+  padding: 10px; /* Padding inside button */
+  background-color: #0099cc; /* Background color */
+  color: white; /* Text color */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  font-size: 16px; /* Font size */
+  margin-bottom: 20px; /* Margin below button */
+}
+
+/* Hover effect for general buttons */
+button:hover {
+  background-color: #016080; /* Change background color on hover */
+}
+
+/* Remember me section styling */
+.remember-me {
+  display: flex; /* Flexbox layout */
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center items horizontally */
+  margin-top: 20px; /* Margin above section */
+}
+
+/* Remember me checkbox styling */
+.remember-me input {
+  margin-right: 5px; /* Margin to the right */
+}
+
+/* Link styling */
+a {
+  color: #0099cc; /* Text color */
+  text-decoration: none; /* Remove underline */
+}
+
+/* Link hover effect */
+a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Heading 2 styling */
+h2 {
+  margin-top: 30px; /* Margin above heading */
+  color: black; /* Font color */
+  font-size: 40px; /* Font size */
+  font-weight: bold; /* Bold font weight */
+}
+
+/* Contact container styling */
+.contact-container {
+  background-color: whitesmoke; /* Background color */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+  max-width: 600px; /* Maximum width */
+}
+
+/* Contact form styling */
+.contact-form {
+  display: flex; /* Flexbox layout */
+  flex-direction: column; /* Stack items vertically */
+  gap: 15px; /* Gap between items */
+  max-width: 600px; /* Maximum width */
+  width: 100%; /* Full width */
+  margin: 0 auto; /* Center horizontally */
+}
+
+/* Styling for name fields in the contact form */
+.name-fields {
+  display: flex; /* Flexbox layout */
+  gap: 45px; /* Gap between fields */
+}
+
+/* Individual name field styling */
+.name-field {
+  flex: 1; /* Flex grow */
+}
+
+/* Label styling within name field */
+.name-field label {
+  display: block; /* Block display */
+  margin-bottom: 5px; /* Margin below label */
+}
+
+/* Input styling within name field */
+.name-field input {
+  width: 100%; /* Full width */
+}
+
+/* Label styling within contact form */
+.contact-form label {
+  font-weight: bold; /* Bold font weight */
+}
+
+/* Input and textarea styling within contact form */
+.contact-form input,
+.contact-form textarea {
+  padding: 0.5rem; /* Padding inside fields */
+  border: 1px solid #ccc; /* Border styling */
+  border-radius: 4px; /* Rounded corners */
+  width: 100%; /* Full width */
+}
+
+/* Textarea specific styling */
+.contact-form textarea {
+  resize: vertical; /* Allow vertical resizing */
+}
+
+/* Button styling within contact form */
+.contact-form button {
+  padding: 0.5rem 1rem; /* Padding inside button */
+  border: none; /* Remove border */
+  background-color: #0099cc; /* Background color */
+  color: white; /* Text color */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  font-size: 16px; /* Font size */
+  align-self: flex-start; /* Align to the start */
+}
+
+/* Hover effect for contact form button */
+.contact-form button:hover {
+  background-color: #016283; /* Change background color on hover */
+}
+
+/* Contact heading styling */
+.contact-h2 {
+  text-align: left; /* Align text to the left */
+  font-weight: 700; /* Bold font weight */
+  font-size: 2.5rem; /* Font
+
+ size */
+  margin-left: 100px; /* Margin to the left */
+  margin-bottom: 1rem; /* Margin below heading */
+}
+
+/* Forgot password container styling */
+.forgot-password-container {
+  background-color: #fff; /* Background color */
+  padding: 20px; /* Padding inside container */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow */
+  width: 100%; /* Full width */
+  max-width: 400px; /* Maximum width */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  display: flex; /* Flexbox layout */
+}
+
+/* Heading styling within forgot password container */
+.forgot-password-container h2 {
+  margin-top: 0; /* Remove top margin */
+  color: #333; /* Text color */
+  font-size: 24px; /* Font size */
+  text-align: center; /* Center text */
+}
+
+/* Input group styling within forgot password container */
+.input-group {
+  margin-bottom: 15px; /* Margin below group */
+}
+
+/* Label styling within forgot password input group */
+.input-group label {
+  display: block; /* Block display */
+  margin-bottom: 5px; /* Margin below label */
+  color: #666; /* Text color */
+}
+
+/* Input styling within forgot password input group */
+.input-group input {
+  width: 100%; /* Full width */
+  padding: 10px; /* Padding inside input */
+  border: 1px solid #ddd; /* Border styling */
+  border-radius: 4px; /* Rounded corners */
+  box-sizing: border-box; /* Include padding in width/height calculations */
+}
+
+/* General button styling */
+button {
+  width: 100%; /* Full width */
+  padding: 10px; /* Padding inside button */
+  border: none; /* Remove border */
+  border-radius: 4px; /* Rounded corners */
+  background-color: #007bff; /* Background color */
+  color: #fff; /* Text color */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for general buttons */
+button:hover {
+  background-color: #0056b3; /* Change background color on hover */
+}
+
+
+/* Responsive styling for screens smaller than 700px */
+@media screen and (max-width: 700px) {
+  .main {
+    background-image: url(Images/map.jpg); /* Background image */
+    background-position: center; /* Center background image */
+    background-size: cover; /* Cover the container */
+  }
+  header {
+    flex-direction: column; /* Stack header items vertically */
+  }
+  .illustration {
+    display: none; /* Hide illustration */
+  }
+  .content {
+    align-items: center; /* Center content */
+    justify-content: center; /* Center content */
+    text-align: center; /* Center text */
+  }
+  .content h2,
+  .content h1 {
+    color: #0099cc; /* Text color */
+    font-weight: bolder; /* Bolder font weight */
+  }
+  nav {
+    display: none; /* Hide navigation */
+  }
+  
+  .hamburger {
+    display: block; /* Show hamburger menu */
+  }
+}
+=======
+
+/* General body styling */
+body {
+    font-family: Arial, sans-serif; /* Set the font family for the whole page */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    background-color: white; /* Set the background color */
+    height: 100%; /* Full height */
+  }
+  
+  /* Menu styling */
+  .menu {
+    width: 100%; /* Full width */
+    height: 14vh; /* Height relative to viewport height */
+    background-color: white; /* Background color */
+    display: flex; /* Flexbox layout */
+    justify-content: space-between; /* Space items evenly */
+    border-bottom: 1px solid rgba(128, 128, 128, 0.80); /* Border at the bottom */
+  }
+  
+  /* Logo section within the menu */
+  .logo {
+    display: flex; /* Flexbox layout */
+  }
+  
+  /* Logo heading styling */
+  .logo h2 {
+    font-size: 30px; /* Font size */
+    color: #0099cc; /* Font color */
+  }
+  
+  /* Logo image styling */
+  .logo img {
+    width: 100px; /* Width of the logo image */
+    border-radius: 10px; /* Rounded corners */
+  }
+  
+  /* Navigation menu styling */
+  ul {
+    display: flex; /* Flexbox layout for list items */
+    margin: 2.5%; /* Margin around the list */
+    gap: 20px; /* Gap between items */
+  }
+  
+  /* List item styling */
+  ul li {
+    list-style: none; /* Remove default list styling */
+  }
+  
+  /* Link styling within list items */
+  ul li a {
+    color: #0099cc; /* Link color */
+    font-size: 18px; /* Font size */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  /* Link hover effect */
+  ul li a:hover {
+    text-decoration: none; /* Maintain no underline on hover */
+  }
+  
+  /* Main section styling */
+  .main {
+    position: relative; /* Position relative to contain absolutely positioned children */
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: flex-start; /* Align items to the start */
+    height: 86vh; /* Height relative to viewport height */
+    text-align: left; /* Align text to the left */
+    background-color: rgba(245, 245, 236, 0.67); /* Background color with transparency */
+    padding: 20px; /* Padding around content */
+    box-sizing: border-box; /* Include padding in width/height calculations */
+    overflow: hidden; /* Hide overflow content */
+    z-index: 0; /* Z-index for stacking context */
+  }
+  
+  /* Main content styling */
+  .main-content {
+    font-weight: 400; /* Normal font weight */
+  }
+  
+  /* Main headings styling */
+  .main h1, .main h2 {
+    font-size: 40px; /* Font size */
+    margin-bottom: 10px; /* Margin below heading */
+    font-weight: bold; /* Bold font weight */
+    color: #0099cc; /* Font color */
+  }
+  
+  /* Additional styling for h1 */
+  .main h1 {
+    margin-bottom: 8px; /* Adjusted bottom margin */
+  }
+  
+  /* Additional styling for h2 */
+  .main h2 {
+    margin-top: 0; /* Removed top margin */
+  }
+  
+  /* Paragraph styling within the main section */
+  .main p {
+    font-size: 20px; /* Font size */
+    margin-bottom: 20px; /* Margin below paragraph */
+    color: rgb(7, 7, 7); /* Font color */
+    font-weight: normal; /* Normal font weight */
+  }
+  
+  /* Styling for smaller paragraphs */
+  .main p1 {
+    font-size: 15px; /* Font size */
+    margin-bottom: 15px; /* Margin below paragraph */
+    margin-left: 20px; /* Left margin */
+    color: black; /* Font color */
+    font-weight: normal; /* Normal font weight */
+  }
+  
+  /* Button styling for locate button */
+  .main .btn-locate {
+    background-color: #00bfff; /* Background color */
+    color: black; /* Text color */
+    padding: 15px 30px; /* Padding inside button */
+    border: none; /* Remove border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 20px; /* Font size */
+    text-decoration: none; /* Remove text decoration */
+    cursor: pointer; /* Pointer cursor */
+    margin-top: 20px; /* Margin above button */
+  }
+  
+  /* Hover effect for locate button */
+  .main .btn-locate:hover {
+    background-color: #0099cc; /* Change background color on hover */
+  }
+  
+  /* General button styling */
+  .button {
+    background-color: #00bfff; /* Background color */
+    color: black; /* Text color */
+    padding: 15px 30px; /* Padding inside button */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 20px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    position: relative; /* Relative positioning */
+    left: 77%; /* Align to the right */
+    transform: translateX(-50%); /* Center horizontally */
+    margin-top: 20px; /* Margin above button */
+  }
+  
+  /* Page heading styling */
+  .page-heading {
+    text-align: center; /* Center align text */
+    font-size: 30px; /* Font size */
+    color: #0099cc; /* Font color */
+    margin: 20px 0; /* Margin above and below */
+  }
+  
+  /* Hover effect for map button */
+  .map-button:hover {
+    background-color: #017ba3; /* Change background color on hover */
+  }
+  
+  /* Styling for the menu main section */
+  .menu-main {
+    position: relative; /* Relative positioning */
+    display: flex; /* Flexbox layout */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    height: 86vh; /* Height relative to viewport height */
+    background-color: white; /* Background color */
+    overflow: hidden; /* Hide overflow content */
+  }
+  
+  /* Background video styling */
+  .bg-video {
+    position: absolute; /* Absolute positioning */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    object-fit: cover; /* Cover the container */
+    z-index: -1; /* Stack below other content */
+  }
+  
+  /* Menu options styling */
+  .menu-options {
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    z-index: 1; /* Stack above background video */
+    margin-left: 30%; /* Margin to the left */
+  }
+  
+  /* Menu options heading styling */
+  .menu-options h1 {
+    font-size: 50px; /* Font size */
+    margin-bottom: 20px; /* Margin below heading */
+    color: #0099cc; /* Font color */
+    font-weight: bold; /* Bold font weight */
+  }
+  
+  /* Menu button styling */
+  .menu-button {
+    background-color: #00bfff; /* Background color */
+    color: black; /* Text color */
+    padding: 20px 40px; /* Padding inside button */
+    border: none; /* Remove border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 25px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    margin-bottom: 20px; /* Margin below button */
+    font-weight: bold; /* Bold font weight */
+    transition: 2s; /* Transition duration */
+  }
+  
+  /* Hover effect for menu button */
+  .menu-button:hover {
+    background-color: #0099cc; /* Change background color on hover */
+  }
+  
+  /* Map styling */
+  #map {
+    width: 100%; /* Full width */
+    height: 82vh; /* Height relative to viewport height */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid black; /* Border styling */
+    position: absolute; /* Absolute positioning */
+    display: flex; /* Flexbox layout */
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+  }
+  
+  /* Container for the map */
+  .map-container {
+    position: relative; /* Relative positioning */
+    width: 99.5%; /* Width of the container */
+    height: 100%; /* Full height */
+  }
+  
+  /* Directions control styling */
+  .mapboxgl-ctrl-directions {
+    position: absolute; /* Absolute positioning */
+    top: 10px; /* Top alignment */
+    left: 10px; /* Left alignment */
+    width: 75%; /* Width of the control */
+    height: 50%; /* Height of the control */
+  }
+  
+  /* Hamburger menu styling (hidden by default) */
+  .hamburger {
+    display: none; /* Hidden by default */
+    background: none; /* No background */
+    border: none; /* No border */
+    font-size: 30px; /* Font size */
+    cursor: pointer
+  
+  ; /* Pointer cursor */
+    color: #0099cc; /* Text color */
+    margin-left: 50px; /* Margin to the left */
+  }
+  
+  /* Side menu styling */
+  .side-menu {
+    height: 100%; /* Full height */
+    width: 0; /* Width 0 (hidden by default) */
+    position: fixed; /* Fixed positioning */
+    z-index: 1; /* Stack above content */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    background-color: whitesmoke; /* Background color */
+    overflow-x: hidden; /* Hide horizontal overflow */
+    transition: 0.5s; /* Transition duration */
+    padding-top: 60px; /* Padding at the top */
+    border-right: 1px solid #0099cc; /* Right border */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3); /* Box shadow */
+  }
+  
+  /* Links within the side menu */
+  .side-menu a {
+    padding: 8px 8px 8px 32px; /* Padding inside links */
+    text-decoration: none; /* Remove underline */
+    font-size: 25px; /* Font size */
+    color: #0099cc; /* Text color */
+    display: block; /* Block display */
+    transition: 0.3s; /* Transition duration */
+  }
+  
+  /* Hover effect for side menu links */
+  .side-menu a:hover {
+    color: #000; /* Change color on hover */
+  }
+  
+  /* Close button styling in the side menu */
+  .side-menu .closebtn {
+    position: absolute; /* Absolute positioning */
+    top: 10px; /* Top alignment */
+    right: 25px; /* Right alignment */
+    font-size: 36px; /* Font size */
+    margin-left: 50px; /* Margin to the left */
+  }
+  
+  /* Background video styling */
+  .background-video {
+    position: absolute; /* Absolute positioning */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    object-fit: cover; /* Cover the container */
+    z-index: -1; /* Stack below other content */
+  }
+  
+  /* Login container styling */
+  .login-container, .signup-container {
+    background-color: whitesmoke; /* Background color */
+    padding: 20px; /* Padding inside container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+    border-radius: 8px; /* Rounded corners */
+    text-align: center; /* Center text */
+    justify-content: center; /* Center content */
+    margin: 0 auto; /* Center horizontally */
+  }
+  
+  /* Login container specific styling */
+  .login-container {
+    width: 450px; /* Width */
+    height: 80vh; /* Height relative to viewport height */
+  }
+  
+  /* Signup container specific styling */
+  .signup-container {
+    width: 700px; /* Width */
+    height: 109vh; /* Height relative to viewport height */
+  }
+  /* .message.success {
+    color: green;
+    background-color: #e6ffe6;
+    border: 1px solid green;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .message.error {
+    color: red;
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+  } */
+  
+  
+  
+  /* Grouping items */
+  .group {
+    display: flex; /* Flexbox layout */
+    gap: 10px; /* Gap between items */
+    justify-content: space-evenly; /* Space items evenly */
+    margin-top: 20px; /* Margin above group */
+  }
+  
+  /* Row styling */
+  .row {
+    display: flex; /* Flexbox layout */
+    gap: 15px; /* Gap between items */
+    margin-bottom: 15px; /* Margin below row */
+  }
+  
+  /* Input group within a row */
+  .row .input-group {
+    flex: 1; /* Flex grow */
+  }
+  
+  /* Input group styling */
+  .input-group {
+    margin-bottom: 15px; /* Margin below group */
+    text-align: left; /* Align text to the left */
+  }
+  
+  /* Label styling within input group */
+  .input-group label {
+    display: block; /* Block display */
+    margin-bottom: 8px; /* Margin below label */
+  }
+  
+  /* Input and select styling within input group */
+  .input-group input, .input-group select {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside input/select */
+    box-sizing: border-box; /* Include padding in width/height calculations */
+  }
+  
+  /* Select element specific styling */
+  .input-group select {
+    margin-top: 4px; /* Top margin */
+  }
+  
+  /* General button styling */
+  button {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside button */
+    background-color: #0099cc; /* Background color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 16px; /* Font size */
+    margin-bottom: 20px; /* Margin below button */
+  }
+  
+  /* Hover effect for general buttons */
+  button:hover {
+    background-color: #016080; /* Change background color on hover */
+  }
+  
+  /* Remember me section styling */
+  .remember-me {
+    display: flex; /* Flexbox layout */
+    align-items: center; /* Align items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin-top: 20px; /* Margin above section */
+  }
+  
+  /* Remember me checkbox styling */
+  .remember-me input {
+    margin-right: 5px; /* Margin to the right */
+  }
+  
+  /* Link styling */
+  a {
+    color: #0099cc; /* Text color */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  /* Link hover effect */
+  a:hover {
+    text-decoration: underline; /* Underline on hover */
+  }
+  
+  /* Heading 2 styling */
+  h2 {
+    margin-top: 30px; /* Margin above heading */
+    color: black; /* Font color */
+    font-size: 40px; /* Font size */
+    font-weight: bold; /* Bold font weight */
+  }
+  
+  /* Contact container styling */
+  .contact-container {
+    background-color: whitesmoke; /* Background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+    max-width: 600px; /* Maximum width */
+  }
+  
+  /* Contact form styling */
+  .contact-form {
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 15px; /* Gap between items */
+    max-width: 600px; /* Maximum width */
+    width: 100%; /* Full width */
+    margin: 0 auto; /* Center horizontally */
+  }
+  
+  /* Styling for name fields in the contact form */
+  .name-fields {
+    display: flex; /* Flexbox layout */
+    gap: 45px; /* Gap between fields */
+  }
+  
+  /* Individual name field styling */
+  .name-field {
+    flex: 1; /* Flex grow */
+  }
+  
+  /* Label styling within name field */
+  .name-field label {
+    display: block; /* Block display */
+    margin-bottom: 5px; /* Margin below label */
+  }
+  
+  /* Input styling within name field */
+  .name-field input {
+    width: 100%; /* Full width */
+  }
+  
+  /* Label styling within contact form */
+  .contact-form label {
+    font-weight: bold; /* Bold font weight */
+  }
+  
+  /* Input and textarea styling within contact form */
+  .contact-form input,
+  .contact-form textarea {
+    padding: 0.5rem; /* Padding inside fields */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 4px; /* Rounded corners */
+    width: 100%; /* Full width */
+  }
+  
+  /* Textarea specific styling */
+  .contact-form textarea {
+    resize: vertical; /* Allow vertical resizing */
+  }
+  
+  /* Button styling within contact form */
+  .contact-form button {
+    padding: 0.5rem 1rem; /* Padding inside button */
+    border: none; /* Remove border */
+    background-color: #0099cc; /* Background color */
+    color: white; /* Text color */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 16px; /* Font size */
+    align-self: flex-start; /* Align to the start */
+  }
+  
+  /* Hover effect for contact form button */
+  .contact-form button:hover {
+    background-color: #016283; /* Change background color on hover */
+  }
+  
+  /* Contact heading styling */
+  .contact-h2 {
+    text-align: left; /* Align text to the left */
+    font-weight: 700; /* Bold font weight */
+    font-size: 2.5rem; /* Font
+  
+   size */
+    margin-left: 100px; /* Margin to the left */
+    margin-bottom: 1rem; /* Margin below heading */
+  }
+  
+  /* Forgot password container styling */
+  .forgot-password-container {
+    background-color: #fff; /* Background color */
+    padding: 20px; /* Padding inside container */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow */
+    width: 100%; /* Full width */
+    max-width: 400px; /* Maximum width */
+    box-sizing: border-box; /* Include padding in width/height calculations */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    display: flex; /* Flexbox layout */
+  }
+  
+  /* Heading styling within forgot password container */
+  .forgot-password-container h2 {
+    margin-top: 0; /* Remove top margin */
+    color: #333; /* Text color */
+    font-size: 24px; /* Font size */
+    text-align: center; /* Center text */
+  }
+  
+  /* Input group styling within forgot password container */
+  .input-group {
+    margin-bottom: 15px; /* Margin below group */
+  }
+  
+  /* Label styling within forgot password input group */
+  .input-group label {
+    display: block; /* Block display */
+    margin-bottom: 5px; /* Margin below label */
+    color: #666; /* Text color */
+  }
+  
+  /* Input styling within forgot password input group */
+  .input-group input {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside input */
+    border: 1px solid #ddd; /* Border styling */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding in width/height calculations */
+  }
+  
+  /* General button styling */
+  button {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside button */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #007bff; /* Background color */
+    color: #fff; /* Text color */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s ease; /* Smooth transition */
+  }
+  
+  /* Hover effect for general buttons */
+  button:hover {
+    background-color: #0056b3; /* Change background color on hover */
+  }
+  
+  
+  /* Responsive styling for screens smaller than 700px */
+  @media screen and (max-width: 700px) {
+    .main {
+      background-image: url(Images/map.jpg); /* Background image */
+      background-position: center; /* Center background image */
+      background-size: cover; /* Cover the container */
+    }
+    header {
+      flex-direction: column; /* Stack header items vertically */
+    }
+    .illustration {
+      display: none; /* Hide illustration */
+    }
+    .content {
+      align-items: center; /* Center content */
+      justify-content: center; /* Center content */
+      text-align: center; /* Center text */
+    }
+    .content h2,
+    .content h1 {
+      color: #0099cc; /* Text color */
+      font-weight: bolder; /* Bolder font weight */
+    }
+    nav {
+      display: none; /* Hide navigation */
+    }
+    
+    .hamburger {
+      display: block; /* Show hamburger menu */
+    }
+  }
+>>>>>>> Stashed changes

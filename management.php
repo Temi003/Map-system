@@ -1,3 +1,19 @@
+<?php
+session_start();
+
+// Prevent caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+// Check if the user is not logged in, redirect to the login page
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +36,7 @@
             <li><a href="menu.html">Menu</a></li>
             <li><a href="contact.html">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
+            <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="content">

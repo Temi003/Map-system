@@ -40,8 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = "Login successful! Redirecting...";
             $message_class = "success";
 
+            // Prevent caching
+            header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+            header("Cache-Control: post-check=0, pre-check=0", false);
+            header("Pragma: no-cache");
+            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
             // Sleep for 2 seconds before redirecting
-            sleep(2);
             header("refresh:2; url=management.php");
             exit();
         } else {
@@ -106,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
     </a>
     
-    <div class="login-container">
+    <div class="login-container" style="margin: 15px auto;">
         <h2 style="margin-top: 8px;">Login</h2>
 
         <!-- Display message if any -->
@@ -136,9 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div style="margin-top: 25px;">
                 New Student? <a href="signup.php">Sign up here.</a>
-            </div>
-            <div style="margin-top: 19px;">
-                <a href="adminlogin.php">Admin Dashboard</a>
             </div>
         </form>
     </div>

@@ -155,10 +155,59 @@ $classes = $conn->query("SELECT `Course Name`, `Lecturer Name`, `Class Year`, `R
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        .update {
-            width: 10px;
-            padding: 10px;
-        }
+
+        /* General button styling */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem; /* Button size */
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none; /* Removes underline from links */
+    color: #fff; /* Text color */
+    margin: 0; /* Ensures no extra margin */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+    width: 100%; /* Forces the button to take up full width of the container */
+    transition: 0.8s;
+}
+/* Blue button style */
+.btn-blue {
+    background-color: #007bff; /* Blue background color */
+    border-color: #007bff; /* Blue border color */
+    margin-bottom: 2px;
+}
+
+/* Red button style */
+.btn-red {
+    background-color: #dc3545; /* Red background color */
+    border-color: #dc3545; /* Red border color */
+    margin-top: 2px;
+}
+
+/* Hover States */
+.btn-blue:hover {
+    background-color: #0056b3; /* Lighter blue on hover */
+    border-color: #0056b3; /* Lighter blue border on hover */
+}
+
+.btn-red:hover {
+    background-color: #c82333; /* Lighter red on hover */
+    border-color: #c82333; /* Lighter red border on hover */
+}
+
+/* Focus and Active States */
+.btn:focus, .btn:active {
+    outline: none; /* Remove default focus outline */
+}
+
+/* Ensure no underline on hover */
+.btn-blue:hover, .btn-red:hover {
+    text-decoration: none; /* Ensure no underline on hover */
+}
     </style>
 </head>
 <body>
@@ -170,7 +219,7 @@ $classes = $conn->query("SELECT `Course Name`, `Lecturer Name`, `Class Year`, `R
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>
@@ -192,7 +241,13 @@ $classes = $conn->query("SELECT `Course Name`, `Lecturer Name`, `Class Year`, `R
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="manageclass.php">Manage Classes</a>
+                <a class="nav-link" href="manageclass.php">Manage Classes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="messages.php">Messages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="managemessage.php">Manage Message</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>
@@ -230,15 +285,24 @@ $classes = $conn->query("SELECT `Course Name`, `Lecturer Name`, `Class Year`, `R
                         <td><?php echo htmlspecialchars($row['Start Time']); ?></td>
                         <td><?php echo htmlspecialchars($row['End Time']); ?></td>
                         <td>
-                            <!-- Update Button -->
-                            <a href="updateclass.php?courseName=<?php echo urlencode($row['Course Name']); ?>&lecturerName=<?php echo urlencode($row['Lecturer Name']); ?>" class="update">Update</a>
-                            
-                            <!-- Delete Button -->
-                            <form method="POST" action="manageclass.php" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this class?');">
-                                <input type="hidden" name="courseName" value="<?php echo htmlspecialchars($row['Course Name']); ?>">
-                                <input type="hidden" name="lecturerName" value="<?php echo htmlspecialchars($row['Lecturer Name']); ?>">
-                                <button type="submit" name="delete" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
+                            <!-- Button Container to hold both buttons -->
+<div class="button-container">
+    <!-- Update Button -->
+    <a href="updateclass.php?courseName=<?php echo urlencode($row['Course Name']); ?>&lecturerName=<?php echo urlencode($row['Lecturer Name']); ?>" class="btn btn-blue">
+        Update
+    </a>
+
+    <!-- Delete Button -->
+    <form method="POST" action="manageclass.php" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this class?');">
+        <input type="hidden" name="courseName" value="<?php echo htmlspecialchars($row['Course Name']); ?>">
+        <input type="hidden" name="lecturerName" value="<?php echo htmlspecialchars($row['Lecturer Name']); ?>">
+        <button type="submit" name="delete" class="btn btn-red">Delete</button>
+    </form>
+</div>
+
+
+
+
                         </td>
                     </tr>
                     <?php endwhile; ?>

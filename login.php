@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>

@@ -124,7 +124,7 @@ if (!isset($_SESSION['email'])) {
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>
@@ -147,6 +147,12 @@ if (!isset($_SESSION['email'])) {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="messages.php">Messages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="managemessage.php">Manage Message</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>

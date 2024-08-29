@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>
@@ -237,13 +237,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Admin Dashboard</h2>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="dashboard.php">Dashboard</a>
+                <a class="nav-link" href="dashboard.php">Dashboard</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="messages.php">Messages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="managemessage.php">Manage Message</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>

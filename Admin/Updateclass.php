@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $courseName = $_POST['courseName'];
     $lecturerName = $_POST['lecturerName'];
     $classYear = $_POST['classYear'];
-    $classroom = $_POST['classroom'];
+    $resource = $_POST['resource'];
     $startTime = $_POST['startTime'];
     $endTime = $_POST['endTime'];
 
@@ -35,28 +35,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = "<div class='alert alert-danger' role='alert'>Error: No matching class found to update.</div>";
         } else {
             // Check for duplicates in other rows
-            $checkStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Class Room` = ?) AND NOT (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Class Room` = ?)");
+            $checkStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Resource` = ?) AND NOT (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Resource` = ?)");
             if ($checkStmt === false) {
                 die("Error preparing the check statement: " . $conn->error);
             }
 
-            $checkStmt->bind_param("ssssssss", $courseName, $lecturerName, $classYear, $classroom, $oldCourseName, $oldLecturerName, $oldClassYear, $oldClassroom);
+            $checkStmt->bind_param("ssssssss", $courseName, $lecturerName, $classYear, $resource, $oldCourseName, $oldLecturerName, $oldClassYear, $oldResource);
             $checkStmt->execute();
             $checkStmt->bind_result($count);
             $checkStmt->fetch();
             $checkStmt->close();
 
             if ($count > 0) {
-                $message = "<div class='alert alert-danger' role='alert'>Error: A class with the same Course Name, Lecturer Name, Class Year, or Class Room already exists.</div>";
+                $message = "<div class='alert alert-danger' role='alert'>Error: A class with the same Course Name, Lecturer Name, Class Year, or Resource already exists.</div>";
             } else {
                 // Prepare the SQL query for update
-                $stmt = $conn->prepare("UPDATE classes SET `Course Name`=?, `Lecturer Name`=?, `Class Year`=?, `Class Room`=?, `Start Time`=?, `End Time`=? WHERE `Course Name`=? AND `Lecturer Name`=? AND `Class Year`=? AND `Class Room`=?");
+                $stmt = $conn->prepare("UPDATE classes SET `Course Name`=?, `Lecturer Name`=?, `Class Year`=?, `Resource`=?, `Start Time`=?, `End Time`=? WHERE `Course Name`=? AND `Lecturer Name`=? AND `Class Year`=? AND `Resource`=?");
                 if ($stmt === false) {
                     die("Error preparing the update statement: " . $conn->error);
                 }
 
                 // Bind parameters
-                $stmt->bind_param("ssssssssss", $courseName, $lecturerName, $classYear, $classroom, $startTime, $endTime, $oldCourseName, $oldLecturerName, $oldClassYear, $oldClassroom);
+                $stmt->bind_param("ssssssssss", $courseName, $lecturerName, $classYear, $resource, $startTime, $endTime, $oldCourseName, $oldLecturerName, $oldClassYear, $oldResource);
 
                 if ($stmt->execute()) {
                     $message = "<div class='alert alert-success' role='alert'>Class updated successfully!</div>";
@@ -238,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>
@@ -261,6 +261,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="messages.php">Messages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="managemessage.php">Manage Message</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>
@@ -289,8 +295,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="text" class="form-control" id="classYear" name="classYear" value="<?php echo isset($_GET['classYear']) ? htmlspecialchars($_GET['classYear']) : ''; ?>" required>
             </div>
             <div class="mb-3">
-                <label for="classroom" class="form-label">Class Room</label>
-                <input type="text" class="form-control" id="classroom" name="classroom" value="<?php echo isset($_GET['classroom']) ? htmlspecialchars($_GET['classroom']) : ''; ?>" required>
+                <label for="classroom" class="form-label">Resource</label>
+                <input type="text" class="form-control" id="classroom" name="resource" value="<?php echo isset($_GET['classroom']) ? htmlspecialchars($_GET['classroom']) : ''; ?>" required>
             </div>
             <div class="mb-3">
                 <label for="startTime" class="form-label">Start Time</label>

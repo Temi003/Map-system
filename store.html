@@ -1,4 +1,24 @@
-<div class="map">
+<script>
+// Override the origin input behavior to prevent changes
+directions.on('origin', event => {
+    const input = event.target;
+    const userCoordinates = directions.getOrigin().geometry.coordinates;
 
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.5772549392964!2d30.053859273731952!3d-1.9204750366455143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca3f75b7b8b91%3A0xc9ab953c704fa9d3!2sKigali%20Independent%20University!5e0!3m2!1sen!2srw!4v1725114706758!5m2!1sen!2srw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-</div>
+    if (!isWithinUlk(userCoordinates)) {
+        alert('Search is restricted to within the ULK campus.');
+        input.value = ''; // Clear the input field if the search is outside ULK
+        directions.setOrigin(userCoordinates); // Reset to the device's location
+    }
+});
+
+// Override the destination input behavior to enforce ULK boundary
+directions.on('destination', event => {
+    const destinationCoordinates = directions.getDestination().geometry.coordinates;
+
+    if (!isWithinUlk(destinationCoordinates)) {
+        alert('Destination must be within the ULK campus.');
+        directions.setDestination(null); // Clear the destination if it is outside ULK
+    }
+});
+
+</script>

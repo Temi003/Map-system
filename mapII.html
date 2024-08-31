@@ -114,10 +114,14 @@
 
         // Get the device's location
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(successLocation, errorLocation);
+            navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+                enableHighAccuracy: true // Request high accuracy if available
+            });
         } else {
             alert('Geolocation is not supported by this browser.');
-            // window.location.href = "menu.html"; // Redirect to menu if geolocation is not supported
+            setTimeout(() => {
+                // window.location.href = "menu.html"; // Redirect to menu if geolocation is not supported
+            }, 1000); // 1000 milliseconds = 1 second
         }
 
         function successLocation(position) {
@@ -126,15 +130,21 @@
             if (isWithinUlk(userCoordinates)) {
                 directions.setOrigin(userCoordinates); // Automatically set the origin to the device's location
                 map.setCenter(userCoordinates); // Center the map on the device's location
+                // Disable origin input to prevent user from changing it
+                document.querySelector('.mapbox-directions-origin-input').setAttribute('disabled', 'true');
             } else {
                 alert('You are not within the ULK campus.');
-                // window.location.href = "menu.html"; // Redirect to menu if user is not within ULK
+                setTimeout(() => {
+                    // window.location.href = "menu.html"; // Redirect to menu if user is not within ULK
+                }, 1000); // 1000 milliseconds = 1 second
             }
         }
 
         function errorLocation() {
             alert('Unable to retrieve your location.');
-            // window.location.href = "menu.html"; // Redirect to menu if unable to retrieve location
+            setTimeout(() => {
+                // window.location.href = "menu.html"; // Redirect to menu if unable to retrieve location
+            }, 1000); // 1000 milliseconds = 1 second
         }
 
         // Function to check if a point is within ULK boundary
@@ -145,13 +155,11 @@
 
         // Override the origin input behavior to prevent changes
         directions.on('origin', event => {
-            const input = event.target;
             const userCoordinates = directions.getOrigin().geometry.coordinates;
 
             if (!isWithinUlk(userCoordinates)) {
                 alert('Search is restricted to within the ULK campus.');
-                input.value = ''; // Clear the input field if the search is outside ULK
-                directions.setOrigin(userCoordinates); // Reset to the device's location
+                directions.setOrigin(null); // Clear the origin if it's outside ULK
             }
         });
 
@@ -164,7 +172,6 @@
                 directions.setDestination(null); // Clear the destination if it is outside ULK
             }
         });
-
     </script>
 </body>
 </html>

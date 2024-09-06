@@ -8,6 +8,32 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; overflow: hidden; height: 86vh; }
+        .marker-label {
+            background-color: rgb(119, 119, 119);
+            color: black;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+        .marker-icon {
+            width: 20px;
+            height: 20px;
+            background: url('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png') no-repeat center center;
+            background-size: contain;
+        }
+        .mapbox-directions-origin-input {
+            pointer-events: none; /* Prevent interaction */
+            background-color: #f0f0f0; /* Light background to indicate it's disabled */
+            cursor: not-allowed; /* Show not-allowed cursor */
+}
+
+    </style>
 </head>
 <body>
     <div class="menu">
@@ -22,63 +48,160 @@
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
         </ul>
     </div>
-    <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; overflow: hidden; height: 86vh;}
-    </style>
-<div class="map-container">
-    <div id="map"></div>
-</div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js'></script>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css' type='text/css' >
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css' type='text/css'>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css' rel='stylesheet' />
     <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v5.2.0/mapbox-gl-directions.css' rel='stylesheet' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v5.2.0/mapbox-gl-directions.js'></script>
 
-    <script src="main.js"></script>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoidGVtc3NzIiwiYSI6ImNsd250cjF3ZDFibncya3J5MzN0MHgzNzUifQ.Bz4RQ5XuUGJZ5UGpZUJZJQ'; // Replace with your Mapbox access token
 
-        // Initialize map
-        const map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/satellite-streets-v12', // Replace with your preferred map style
-            center: [30.0573877, -1.9209785], // Default center coordinates (Kigali, Rwanda)
-            zoom: 16.5 // Default zoom level
-        });
+// Initialize map
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/satellite-streets-v12', // Replace with your preferred map style
+    center: [30.056434194289224, -1.92135966820071], // ULK coordinates (longitude, latitude)
+    zoom: 16.5 // Default zoom level
+});
 
-        map.addControl(new mapboxgl.NavigationControl());
+// Add navigation control (zoom buttons)
+map.addControl(new mapboxgl.NavigationControl());  // Add only one navigation control
 
+// Define the ULK boundary (coordinates for the southwest and northeast corners)
+const ulkBounds = [
+    [30.054, -1.923], // Southwest corner of ULK boundary
+    [30.058, -1.918]  // Northeast corner of ULK boundary
+];
+
+// Add directions control
+const directions = new MapboxDirections({
+    accessToken: mapboxgl.accessToken,
+    unit: 'metric',
+    profile: 'mapbox/driving', // Adjust profile based on your preference
+    controls: {
+        inputs: true,  // Ensure inputs are enabled
+        instructions: true,
+        profileSwitcher: true
+    }
+});
+
+// Add directions control to the map
+map.addControl(directions, 'top-left');
+
+// Create markers for origin and destination
+const originMarker = new mapboxgl.Marker({ color: 'red' }).setLngLat([0, 0]).addTo(map);
+const destinationMarker = new mapboxgl.Marker({ color: 'green' }).setLngLat([0, 0]).addTo(map);
+
+// Array of coordinates for different locations within ULK campus
+const ulkLocations = [
+    { coordinates: [30.055050174489686, -1.9222067695028937], name: "ULK Stadium", offset: [0, 25] },
+    { coordinates: [30.05748, -1.92190], name: "Finance", offset: [-25, 0] },
+    { coordinates: [30.05529, -1.92080], name: "Church", offset: [25, 0] },
+    { coordinates: [30.05649, -1.92020], name: "Master's Building", offset: [0, -25] },
+    { coordinates: [30.05788, -1.92087], name: "Cafeteria", offset: [0, 25] },
+    { coordinates: [30.05754, -1.92226], name: "Law", offset: [-25, 0] },
+    // Add more locations as needed
+];
+
+// Create location labels
+ulkLocations.forEach(location => {
+    const label = document.createElement('div');
+    label.className = 'marker-label';
+    label.textContent = location.name;
+
+    new mapboxgl.Marker({ element: label, anchor: 'center' })
+        .setLngLat(location.coordinates)
+        .setOffset(location.offset)
+        .addTo(map);
+});
+
+// Get the device's location
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+        enableHighAccuracy: true // Request high accuracy if available
+    });
+} else {
+    alert('Geolocation is not supported by this browser.');
+    setTimeout(() => {
+        // window.location.href = "menu.html"; // Redirect to menu if geolocation is not supported
+    }, 1000); // 1000 milliseconds = 1 second
+}
+
+function successLocation(position) {
+    const userCoordinates = [position.coords.longitude, position.coords.latitude];
+
+    if (isWithinUlk(userCoordinates)) {
+        directions.setOrigin(userCoordinates); // Automatically set the origin to the device's location
+        originMarker.setLngLat(userCoordinates); // Update origin marker
+        map.setCenter(userCoordinates); // Center the map on the device's location
         
-        const directions = new MapboxDirections({
-            accessToken: mapboxgl.accessToken,
-            unit: 'metric',
-            profile: 'mapbox/driving', // Adjust profile based on your preference
-            interactive: true,
-            controls: {
-                inputs: true,
-                instructions: true,
-                profileSwitcher: true
-            }
-        });
-
-
-        map.addControl(directions, 'top-left');
-
-        if (origin && destination) {
-            directions.setOrigin(origin);
-            directions.setDestination(destination);
+        // Disable origin input
+        const originInput = document.querySelector('.mapbox-directions-origin-input');
+        if (originInput) {
+            originInput.setAttribute('disabled', 'true');
+            originInput.setAttribute('placeholder', 'Origin: Your Location');
+            originInput.classList.add('mapbox-directions-origin-input');
         }
+    } else {
+        alert('You are not within the ULK campus.');
+        setTimeout(() => {
+            // window.location.href = "menu.html"; // Redirect to menu if user is not within ULK
+        }, 1000); // 1000 milliseconds = 1 second
+    }
+}
 
-        directions.on('route', (e) => {
-            const routes = e.route;
-            if (routes.length > 0) {
-                const route = routes[0];
-                const duration = Math.floor(route.duration / 60); // Duration in minutes
-                alert(`Estimated travel time: ${duration} minutes`);
-            }
-        });
+function errorLocation() {
+    alert('Unable to retrieve your location.');
+    setTimeout(() => {
+        // window.location.href = "menu.html"; // Redirect to menu if unable to retrieve location
+    }, 1000); // 1000 milliseconds = 1 second
+}
+
+// Function to check if a point is within ULK boundary
+function isWithinUlk(coordinates) {
+    return coordinates[0] >= ulkBounds[0][0] && coordinates[0] <= ulkBounds[1][0] &&
+           coordinates[1] >= ulkBounds[0][1] && coordinates[1] <= ulkBounds[1][1];
+}
+
+// Override the origin input behavior to prevent changes
+directions.on('origin', event => {
+    const userCoordinates = directions.getOrigin().geometry.coordinates;
+
+    if (!isWithinUlk(userCoordinates)) {
+        alert('Search is restricted to within the ULK campus.');
+        directions.setOrigin(null); // Clear the origin input
+    }
+});
+
+// Override the destination input behavior to restrict searches within ULK
+directions.on('destination', event => {
+    const destinationCoordinates = directions.getDestination().geometry.coordinates;
+
+    if (!isWithinUlk(destinationCoordinates)) {
+        alert('Search is restricted to within the ULK campus.');
+        directions.setDestination(null); // Clear the destination input
+    } else {
+        destinationMarker.setLngLat(destinationCoordinates); // Update destination marker
+    }
+});
+
+// Event listener to trigger when a route is generated
+directions.on('route', (e) => {
+    const route = e.route[0];
+    const travelTime = route.duration / 60; // Convert time from seconds to minutes
+
+    alert(`Estimated travel time: ${travelTime.toFixed(2)} minutes`);
+});
+
     </script>
+    
+    
 </body>
 </html>

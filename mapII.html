@@ -130,7 +130,7 @@ if (navigator.geolocation) {
 } else {
     alert('Geolocation is not supported by this browser.');
     setTimeout(() => {
-        // window.location.href = "menu.html"; // Redirect to menu if geolocation is not supported
+        window.location.href = "menu.html"; // Redirect to menu if geolocation is not supported
     }, 1000); // 1000 milliseconds = 1 second
 }
 
@@ -152,7 +152,7 @@ function successLocation(position) {
     } else {
         alert('You are not within the ULK campus.');
         setTimeout(() => {
-            // window.location.href = "menu.html"; // Redirect to menu if user is not within ULK
+            window.location.href = "menu.html"; // Redirect to menu if user is not within ULK
         }, 1000); // 1000 milliseconds = 1 second
     }
 }
@@ -160,7 +160,7 @@ function successLocation(position) {
 function errorLocation() {
     alert('Unable to retrieve your location.');
     setTimeout(() => {
-        // window.location.href = "menu.html"; // Redirect to menu if unable to retrieve location
+         window.location.href = "menu.html"; // Redirect to menu if unable to retrieve location
     }, 1000); // 1000 milliseconds = 1 second
 }
 

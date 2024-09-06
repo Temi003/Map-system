@@ -12,10 +12,31 @@
         .table tbody tr {
             background-color: rgb(245, 245, 245); /* Row background color */
             width: 100%;
-        }
+        } 
         .table td, .table th {
             padding: 12px; /* Add padding for better appearance */
             text-align: left;
+        }
+        .btn{
+            background-color: skyblue; /* Background color */
+            color: black; /* Text color */
+            padding: 15px 20px; /* Padding inside button */
+            border: none; /* Remove border */
+            border-radius: 10px; /* Rounded corners */
+            font-size: 18px; /* Font size */
+            text-decoration: none; /* Remove text decoration */
+            cursor: pointer; /* Pointer cursor */
+            margin: 10px; /* Margin above button */
+        }
+        .btn:hover{
+            background-color: #00bfff;
+            text-decoration: none;
+        }
+        .bt{
+            padding: 10px 15px;
+        }
+        .bt:hover{
+            text-decoration: none;
         }
     </style>
 </head>
@@ -26,14 +47,16 @@
             <h2>KIGALI INDEPENDENT UNIVERSITY (ULK)</h2>
         </div>
         <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.php">Contact Us</a></li>
+        <li><a href="management.php">Home</a></li>
+            <!-- <li><a href="menu.html">Menu</a></li>
+            <li><a href="contact.php">Contact Us</a></li> -->
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
+            <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="dashboard-content">
-        <h2>Avalibility Of Resources</h2>
+        <h2 style="margin: 5px;">Avalibility Of Resources</h2>
+        <a href="#" class="btn">Add Resource</a>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -44,9 +67,11 @@
                     <th>Resource</th>
                     <th>Start Time</th>
                     <th>End Time</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                <tr>
                 <?php
                 include 'connection.php'; // Include the database connection
 
@@ -59,7 +84,7 @@
                 }
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
+                        echo "
                                 <td>{$row['Course Name']}</td>
                                 <td>{$row['Lecturer Name']}</td>
                                 <td>{$row['Class Year']}</td>
@@ -67,13 +92,17 @@
                                 <td>{$row['Resource']}</td>
                                 <td>{$row['Start Time']}</td>
                                 <td>{$row['End Time']}</td>
-                            </tr>";
+                            ";
                     }
                 } else {
                     echo "<tr><td colspan='7'>No recent activities</td></tr>"; 
                 }
                 $conn->close();
                 ?>
+                <td>
+                <a  class="bt btn-primary">Update</a>
+                <a  class="bt btn-danger">Delete</a>
+                </td>
             </tbody>
         </table>
     </div>

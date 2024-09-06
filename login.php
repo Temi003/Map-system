@@ -8,31 +8,31 @@ $message = '';
 $message_class = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $fname = mysqli_real_escape_string($conn, $_POST['firstname']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $remember = isset($_POST['remember-me']); // Check if "Remember Me" is checked
 
     // Prepare and execute the query to find the user by email
-    $stmt = $conn->prepare("SELECT Email, Password FROM users WHERE Email = ?");
+    $stmt = $conn->prepare("SELECT firstname, Password FROM users WHERE firstname = ?");
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("s", $fname);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows == 1) {
-        $stmt->bind_result($db_email, $db_password);
+        $stmt->bind_result($db_fname, $db_password);
         $stmt->fetch();
 
         // Compare the entered password directly with the stored password
         if ($password === $db_password) {
             // Set session variables
-            $_SESSION['email'] = $email;
+            $_SESSION['firstname'] = $fname;
 
             // If "Remember Me" is checked, set a cookie for 1 day
             if ($remember) {
-                setcookie('email', $email, time() + 86400, "/", "", true, true); // Secure and HttpOnly flags
+                setcookie('firstname', $fname, time() + 86400, "/", "", true, true); // Secure and HttpOnly flags
                 setcookie('password', $password, time() + 86400, "/", "", true, true); // Secure and HttpOnly flags
             }
 
@@ -123,8 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <form action="login.php" method="post">
             <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <label for="firstname">Firstname</label>
+                <input type="text" id="" name="firstname" placeholder="Enter your firstname" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>

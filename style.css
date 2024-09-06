@@ -69,7 +69,7 @@ body {
     height: 86vh; /* Height relative to viewport height */
     text-align: left; /* Align text to the left */
     background-color: rgba(245, 245, 236, 0.67); /* Background color with transparency */
-    padding: 20px; /* Padding around content */
+    padding: 10px; /* Padding around content */
     box-sizing: border-box; /* Include padding in width/height calculations */
     overflow: hidden; /* Hide overflow content */
     z-index: 0; /* Z-index for stacking context */

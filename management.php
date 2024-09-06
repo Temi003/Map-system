@@ -7,8 +7,9 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
+
 // Check if the user is not logged in, redirect to the login page
-if (!isset($_SESSION['email'])) {
+if (!isset($_SESSION['firstname'])) {
     header("Location: login.php");
     exit();
 }
@@ -32,9 +33,9 @@ if (!isset($_SESSION['email'])) {
             <h2>KIGALI INDEPENDENT UNIVERSITY (ULK)</h2>
         </div>
         <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="menu.html">Menu</a></li>
-            <li><a href="contact.php">Contact Us</a></li>
+            <li><a href="#">Home</a></li>
+            <!-- <li><a href="menu.html">Menu</a></li>
+            <li><a href="contact.php">Contact Us</a></li> -->
             <li><a href="https://ulk.ac.rw/" target="_blank">School Website</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
@@ -45,14 +46,19 @@ if (!isset($_SESSION['email'])) {
                 <source src="videos/mag.mp4" type="video/mp4">
             </video>
     <div class="main">
-        <div>
+        
         <div class="box">
-            </div>
-            <h2>Resource Management</h2>
+        <h1> ADMIN DASHBOARD </h1>
+	     <div style="font-size: 18px; font-weight: bold;">
+	     	<br>
+        Hello, <?php echo $_SESSION['firstname']; ?>
+	    </div><br>
+            <!-- <h2>Resource Management</h2> -->
             <p>Manage and locate resources efficiently.</p>
-            <a href="resource.php" class="btn-locate"><i class="fa-solid fa-cloud" style="color: #ffffff;"></i></a>
+            <a href="resource.php" class="btn-locate">Manage</a>
             <div class="dashboard-content">
-        </div>
+                
+            </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>

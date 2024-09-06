@@ -33,6 +33,14 @@ if (!isset($_SESSION['email'])) {
             left: -250px; /* Hide by default */
             transition: left 0.3s ease;
             z-index: 999; /* Ensure it stays below header */
+            overflow-y: auto; /* Enable vertical scrolling */
+            overflow-x: hidden; /* Hide horizontal scrollbar if any */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        #sidebar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
         }
 
         #sidebar h2 {
@@ -105,13 +113,90 @@ if (!isset($_SESSION['email'])) {
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
         }
-        .table tbody tr {
-            background-color: rgb(245, 245, 245); /* Row background color */
-            width: 100%;
+
+        .table-container {
+            margin-top: 20px;
         }
-        .table td, .table th {
-            padding: 12px; /* Add padding for better appearance */
+
+        .table-container table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+
+        .update-form {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th, td {
             text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* General button styling */
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem; /* Button size */
+            font-size: 0.875rem;
+            font-weight: 400;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-decoration: none; /* Removes underline from links */
+            color: #fff; /* Text color */
+            margin: 0; /* Ensures no extra margin */
+            box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+            width: 100%; /* Forces the button to take up full width of the container */
+            transition: 0.8s;
+        }
+
+        /* Blue button style */
+        .btn-blue {
+            background-color: #007bff; /* Blue background color */
+            border-color: #007bff; /* Blue border color */
+            margin-bottom: 2px;
+        }
+
+        /* Red button style */
+        .btn-red {
+            background-color: #dc3545; /* Red background color */
+            border-color: #dc3545; /* Red border color */
+            margin-top: 2px;
+        }
+
+        /* Hover States */
+        .btn-blue:hover {
+            background-color: #0056b3; /* Lighter blue on hover */
+            border-color: #0056b3; /* Lighter blue border on hover */
+        }
+
+        .btn-red:hover {
+            background-color: #c82333; /* Lighter red on hover */
+            border-color: #c82333; /* Lighter red border on hover */
+        }
+
+        /* Focus and Active States */
+        .btn:focus, .btn:active {
+            outline: none; /* Remove default focus outline */
+        }
+
+        /* Ensure no underline on hover */
+        .btn-blue:hover, .btn-red:hover {
+            text-decoration: none; /* Ensure no underline on hover */
         }
     </style>
 </head>
@@ -153,6 +238,12 @@ if (!isset($_SESSION['email'])) {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="managemessage.php">Manage Message</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="updateresource.php">Update Availability</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="ticket.php">Tickets</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>

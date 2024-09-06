@@ -333,31 +333,7 @@ body {
     width: 700px; /* Width */
     height: 109vh; /* Height relative to viewport height */
   }
-  /* .message.success {
-    color: green;
-    background-color: #e6ffe6;
-    border: 1px solid green;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 10px;
-  }
-  
-  .message.error {
-    color: red;
-    background-color: #ffe6e6;
-    border: 1px solid red;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 10px;
-  } */
-  
-  
+    
   /* Grouping items */
   .group {
     display: flex; /* Flexbox layout */
@@ -601,34 +577,118 @@ body {
   }
   
   
-  /* Responsive styling for screens smaller than 700px */
-  @media screen and (max-width: 700px) {
-    .main {
-      background-image: url(Images/map.jpg); /* Background image */
-      background-position: center; /* Center background image */
-      background-size: cover; /* Cover the container */
-    }
-    header {
-      flex-direction: column; /* Stack header items vertically */
-    }
-    .illustration {
-      display: none; /* Hide illustration */
-    }
-    .content {
-      align-items: center; /* Center content */
-      justify-content: center; /* Center content */
-      text-align: center; /* Center text */
-    }
-    .content h2,
-    .content h1 {
-      color: #0099cc; /* Text color */
-      font-weight: bolder; /* Bolder font weight */
-    }
-    nav {
-      display: none; /* Hide navigation */
-    }
-    
-    .hamburger {
-      display: block; /* Show hamburger menu */
-    }
+  /* Responsive styling for iPads and larger devices (min-width: 768px) */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .menu {
+    height: 12vh; /* Adjust height */
   }
+  
+  .logo h2 {
+    font-size: 28px; /* Adjust font size */
+  }
+  
+  .main {
+    height: 82vh; /* Adjust height */
+    padding: 20px; /* Adjust padding */
+  }
+  
+  .main h1, .main h2 {
+    font-size: 36px; /* Adjust font size */
+  }
+  
+  .main p {
+    font-size: 18px; /* Adjust font size */
+  }
+  
+  .contact-container, .login-container, .signup-container {
+    width: 90%; /* Adjust width */
+  }
+  
+  .button, .btn-locate {
+    padding: 12px 24px; /* Adjust padding */
+  }
+  
+  .menu-options h1 {
+    font-size: 40px; /* Adjust font size */
+  }
+}
+
+/* Responsive styling for iPhone 14 Pro Max and iPhone XR (max-width: 430px) */
+@media screen and (max-width: 430px) {
+  .menu {
+    height: 10vh; /* Adjust height */
+  }
+  
+  .logo h2 {
+    font-size: 24px; /* Adjust font size */
+  }
+  
+  .main {
+    height: auto; /* Allow height to adjust */
+    padding: 10px; /* Adjust padding */
+  }
+  
+  .main h1, .main h2 {
+    font-size: 28px; /* Adjust font size */
+  }
+  
+  .main p {
+    font-size: 16px; /* Adjust font size */
+  }
+  
+  .contact-container, .login-container, .signup-container {
+    width: 95%; /* Adjust width */
+  }
+  
+  .button, .btn-locate {
+    padding: 10px 20px; /* Adjust padding */
+  }
+  
+  .menu-options h1 {
+    font-size: 32px; /* Adjust font size */
+  }
+  
+  .hamburger {
+    display: block; /* Ensure hamburger menu is visible */
+  }
+  
+  /* Additional adjustments */
+  .side-menu {
+    width: 75%; /* Adjust width for smaller screens */
+  }
+}
+
+/* Specific adjustments for iPhone XR (max-width: 414px) */
+@media screen and (max-width: 414px) {
+  .menu {
+    height: 8vh; /* Adjust height */
+  }
+  
+  .logo h2 {
+    font-size: 22px; /* Adjust font size */
+  }
+  
+  .main {
+    padding: 8px; /* Adjust padding */
+  }
+  
+  .main h1, .main h2 {
+    font-size: 24px; /* Adjust font size */
+  }
+  
+  .main p {
+    font-size: 14px; /* Adjust font size */
+  }
+  
+  .contact-container, .login-container, .signup-container {
+    width: 100%; /* Full width */
+  }
+  
+  .button, .btn-locate {
+    padding: 8px 16px; /* Adjust padding */
+  }
+  
+  .menu-options h1 {
+    font-size: 28px; /* Adjust font size */
+  }
+}

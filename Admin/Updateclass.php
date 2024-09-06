@@ -87,87 +87,96 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="style.css">
     <style>
         /* Sidebar styling */
-        #sidebar {
-            background-color: rgb(1, 1, 31);
-            width: 250px;
-            height: calc(100vh - 14vh); /* Height minus header height */
-            position: fixed;
-            top: 14vh; /* Start below the header */
-            left: -250px; /* Hide by default */
-            transition: left 0.3s ease;
-            z-index: 999; /* Ensure it stays below header */
-        }
+#sidebar {
+    background-color: rgb(1, 1, 31);
+    width: 250px;
+    height: calc(100vh - 14vh); /* Height minus header height */
+    position: fixed;
+    top: 14vh; /* Start below the header */
+    left: -250px; /* Hide by default */
+    transition: left 0.3s ease;
+    z-index: 999; /* Ensure it stays below header */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrollbar if any */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
 
-        #sidebar h2 {
-            color: pink;
-            text-align: center;
-        }
+#sidebar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
 
-        #sidebar .nav-link {
-            color: white;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
+#sidebar h2 {
+    color: pink;
+    text-align: center;
+}
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
-        }
+#sidebar .nav-link {
+    color: white;
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+}
 
-        .dashboard-content {
-            margin-left: 0; /* Adjust for sidebar width */
-            padding: 20px;
-            padding-top: 14vh; /* Adjust for header height */
-            transition: margin-left 0.3s ease;
-        }
+#sidebar .nav-link.active {
+    font-weight: bold;
+    color: white;
+}
 
-        #menu-toggle {
-            display: none;
-        }
+.dashboard-content {
+    margin-left: 0; /* Adjust for sidebar width */
+    padding: 20px;
+    padding-top: 14vh; /* Adjust for header height */
+    transition: margin-left 0.3s ease;
+}
 
-        #menu-icon {
-            font-size: 30px;
-            cursor: pointer;
-            position: fixed;
-            top: 100px; /* Adjust to position the icon */
-            left: 20px; /* Adjust to position the icon */
-            z-index: 1001; /* Ensure it is above the sidebar */
-        }
+#menu-toggle {
+    display: none;
+}
 
-        #menu-toggle:checked ~ #sidebar {
-            left: 0; /* Show sidebar */
-        }
+#menu-icon {
+    font-size: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 100px; /* Adjust to position the icon */
+    left: 20px; /* Adjust to position the icon */
+    z-index: 1001; /* Ensure it is above the sidebar */
+}
 
-        #menu-toggle:checked ~ .dashboard-content {
-            margin-left: 250px; /* Adjust for sidebar width */
-        }
+#menu-toggle:checked ~ #sidebar {
+    left: 0; /* Show sidebar */
+}
 
-        .hamburger-icon {
-            display: inline-block;
-            cursor: pointer;
-        }
+#menu-toggle:checked ~ .dashboard-content {
+    margin-left: 250px; /* Adjust for sidebar width */
+}
 
-        .hamburger-icon span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: red;
-            margin: 5px 0;
-            transition: 0.3s;
-        }
+.hamburger-icon {
+    display: inline-block;
+    cursor: pointer;
+}
 
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
-            transform: rotate(-45deg) translate(-5px, 6px);
-        }
+.hamburger-icon span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: red;
+    margin: 5px 0;
+    transition: 0.3s;
+}
 
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
-            opacity: 0;
-        }
+#menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
 
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
-            transform: rotate(45deg) translate(-5px, -6px);
-        }
+#menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
+    opacity: 0;
+}
+
+#menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
         .table tbody tr {
             background-color: rgb(245, 245, 245); /* Row background color */
             width: 100%;
@@ -267,6 +276,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="managemessage.php">Manage Message</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="updateresource.php">Update Availability</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="ticket.php">Tickets</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>

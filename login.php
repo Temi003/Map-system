@@ -1,63 +1,41 @@
 <?php
 include("connection.php");
-
 session_start(); // Start the session
 
-// Initialize message variables
-$message = '';
-$message_class = '';
+// Initialize error message
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $fname = mysqli_real_escape_string($conn, $_POST['firstname']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $remember = isset($_POST['remember-me']); // Check if "Remember Me" is checked
 
     // Prepare and execute the query to find the user by email
-    $stmt = $conn->prepare("SELECT firstname, Password FROM users WHERE firstname = ?");
+    $stmt = $conn->prepare("SELECT Email, Password, `First name` FROM users WHERE Email = ?");
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
-    $stmt->bind_param("s", $fname);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows == 1) {
-        $stmt->bind_result($db_fname, $db_password);
+        $stmt->bind_result($db_email, $db_password, $db_firstname);
         $stmt->fetch();
 
-        // Compare the entered password directly with the stored password
+        // Compare the entered password with the stored password
         if ($password === $db_password) {
             // Set session variables
-            $_SESSION['firstname'] = $fname;
-
-            // If "Remember Me" is checked, set a cookie for 1 day
-            if ($remember) {
-                setcookie('firstname', $fname, time() + 86400, "/", "", true, true); // Secure and HttpOnly flags
-                setcookie('password', $password, time() + 86400, "/", "", true, true); // Secure and HttpOnly flags
-            }
-
-            // Set success message and class
-            $message = "Login successful! Redirecting...";
-            $message_class = "success";
-
-            // Prevent caching
-            header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-            header("Cache-Control: post-check=0, pre-check=0", false);
-            header("Pragma: no-cache");
-            header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-
-            // Sleep for 2 seconds before redirecting
-            header("refresh:2; url=management.php");
+            $_SESSION['user_email'] = $email;
+            $_SESSION['firstname'] = $db_firstname; // Store first name in session
+            
+            // Redirect to the notifications page after successful login
+            header("Location: management.php");
             exit();
         } else {
-            // Set error message and class
-            $message = "Invalid password.";
-            $message_class = "danger";
+            $error = "Invalid password.";
         }
     } else {
-        // Set error message and class
-        $message = "No account found with that email address.";
-        $message_class = "danger";
+        $error = "No account found with that email address.";
     }
 
     $stmt->close();
@@ -87,9 +65,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-decoration: none;
             color: white;
             font-size: 20px;
-            position: absolute; /* Make sure it stays in position */
-            top: 110px; /* Adjust as needed */
-            left: 20px; /* Adjust as needed */
+            position: absolute;
+            top: 110px;
+            left: 20px;
+        }
+        button[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0099cc;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button[type="submit"]:hover {
+            background-color: #007399;
         }
     </style>
 </head>
@@ -115,16 +106,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2 style="margin-top: 8px;">Login</h2>
 
         <!-- Display message if any -->
-        <?php if (!empty($message)): ?>
-            <div class="alert alert-<?php echo htmlspecialchars($message_class); ?>" role="alert">
-                <?php echo htmlspecialchars($message); ?>
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 
         <form action="login.php" method="post">
             <div class="input-group">
-                <label for="firstname">Firstname</label>
-                <input type="text" id="" name="firstname" placeholder="Enter your firstname" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
@@ -132,18 +123,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <button type="submit" name="login">Login</button>
 
-            <div class="remember-me" style="margin-top: 20px;">
+            <div class="remember-me" style="margin-top: 15px;">
                 <input type="checkbox" id="remember-me" name="remember-me">
                 <label for="remember-me">Remember me</label>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px;">
                 <a href="forgetpassword.php">Forgot password?</a>
             </div>
-            <div style="margin-top: 25px;">
+            <div style="margin-top: 15px;">
                 New Student? <a href="signup.php">Sign up here.</a>
             </div>
         </form>
     </div>
-    <script src="main.js"></script>
 </body>
 </html>

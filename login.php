@@ -54,6 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        .login-container{
+            margin: 1% auto;
+        }
         .back-button {
             width: 50px;
             height: 50px;
@@ -82,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         button[type="submit"]:hover {
             background-color: #007399;
         }
-    </style>
+        </style>
 </head>
 <body>
     <div class="menu">
@@ -99,11 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     
     <a href="menu.html" class="back-button">
-    <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
+        <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
     </a>
     
-    <div class="login-container" style="margin: 15px auto;">
-        <h2 style="margin-top: 8px;">Login</h2>
+    <div class="login-container">
+        <h2>Login</h2>
 
         <!-- Display message if any -->
         <?php if (!empty($error)): ?>
@@ -123,14 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <button type="submit" name="login">Login</button>
 
-            <div class="remember-me" style="margin-top: 15px;">
+            <div class="remember-me" style="margin-top: 3px;">
                 <input type="checkbox" id="remember-me" name="remember-me">
                 <label for="remember-me">Remember me</label>
             </div>
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 10px;">
                 <a href="forgetpassword.php">Forgot password?</a>
             </div>
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 10px;">
                 New Student? <a href="signup.php">Sign up here.</a>
             </div>
         </form>

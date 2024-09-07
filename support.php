@@ -121,13 +121,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: block;
             width: 25px;
             height: 3px;
-            background: red;
+            background: black;
             margin: 5px 0;
             transition: 0.3s;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
             transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
@@ -136,6 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
+            background: white;
         }
 
         .dashboard-content {
@@ -229,6 +231,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="waitlist.php">Waitlist</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="waitlisthistory.php">Waitlist History</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="book.php">Book Resource</a>

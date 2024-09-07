@@ -1,61 +1,69 @@
 <?php
+// Start the session
 session_start();
-include 'connection.php'; // Include the database connection
 
-// Ensure the user is logged in and their email is stored in the session
+// Include the database connection
+include 'connection.php';
+
+// Initialize variables
+$table_html = "";
+$message = "";
+$showPrintIcon = false; // Initialize flag
+
+// Check if user is logged in and email is available in the session
 if (!isset($_SESSION['user_email'])) {
-    header("Location: login.php");
-    exit();
+    die("User not logged in.");
 }
 
-$current_user_email = $_SESSION['user_email'];
+$user_email = $_SESSION['user_email']; // Get logged-in user's email
 
-// Initialize variables for messages and table content
-$message = "";
-$tableContent = "";
-$showPrintIcon = false;
-
-// Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    if (isset($_POST['email'])) {
+        $email = $_POST['email'];
 
-    // Verify if the email matches the current user's email
-    if ($email !== $current_user_email) {
-        $message = "<div class='error-box'>You cannot view the booking history for another user.</div>";
-    } else {
-        // Fetch booking history for the current user
-        $stmt = $conn->prepare("SELECT resource, booking_time FROM bookings WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $showPrintIcon = true; // Set flag to show print icon
-            $tableContent .= "<table border='1'>
-                                <tr>
-                                    <th>Resource</th>
-                                    <th>Booking Time</th>
-                                </tr>";
-            while ($row = $result->fetch_assoc()) {
-                $tableContent .= "<tr>
-                                    <td>" . htmlspecialchars($row['resource']) . "</td>
-                                    <td>" . htmlspecialchars($row['booking_time']) . "</td>
-                                  </tr>";
-            }
-            $tableContent .= "</table>";
+        // Validate the email address
+        if ($email !== $user_email) {
+            $message = "You are not authorized to check the waitlist history for this user.";
         } else {
-            $message = "<div class='info-box'>No bookings found for this user.</div>";
+            // Prepare and execute the SQL statement
+            $stmt = $conn->prepare("SELECT resource, signup_time, `reserved time` FROM waitlist WHERE email = ?");
+            if ($stmt === false) {
+                die("Error preparing statement: " . htmlspecialchars($conn->error));
+            }
+
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $showPrintIcon = true; // Set flag to show print icon
+                $table_html .= "<table border='1'>
+                        <tr>
+                            <th>Resource</th>
+                            <th>Signup Time</th>
+                            <th>Reserved Time</th>
+                        </tr>";
+                while ($row = $result->fetch_assoc()) {
+                    $table_html .= "<tr>
+                            <td>" . htmlspecialchars($row['resource']) . "</td>
+                            <td>" . htmlspecialchars($row['signup_time']) . "</td>
+                            <td>" . htmlspecialchars($row['reserved time']) . "</td>
+                          </tr>";
+                }
+                $table_html .= "</table>";
+            } else {
+                $message = 'No waitlist found for this user.';
+            }
+
+            $stmt->close();
+            $conn->close();
         }
-
-        $stmt->close();
+    } else {
+        $message = "Email field is missing.";
     }
-
-    $conn->close();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="icon" href="Images/ULK logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Add this line for Font Awesome -->
     <style>
         /* Sidebar styling */
         #sidebar {
@@ -188,81 +196,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         /* Form styling */
-form {
-    max-width: 600px; /* Limit the maximum width of the form */
-    width: 100%; /* Ensure the form takes the full width of its container */
-    padding: 20px;
-    background: #f8f9fa; /* Background color */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Shadow effect */
-    margin: 1% auto; /* Center the form horizontally */
-}
+        form {
+            max-width: 600px; /* Limit the maximum width of the form */
+            width: 100%; /* Ensure the form takes the full width of its container */
+            padding: 20px;
+            background: #f8f9fa; /* Background color */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            margin: 1% auto; /* Center the form horizontally */
+        }
 
-/* Label styling */
-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
+        /* Label styling */
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-form h1{
-    text-align: center; /* Center text horizontally */
+        form h1 {
+            text-align: center; /* Center text horizontally */
             margin-bottom: 20px; /* Space below the heading */
             margin-top: 0; /* Remove space above the heading */
-}
+        }
 
-/* Input fields styling */
-form input[type="email"],
-form input[type="submit"] {
-    width: calc(100% - 22px); /* Full width minus padding */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 16px;
-}
+        /* Input fields styling */
+        form input[type="email"],
+        form input[type="submit"] {
+            width: calc(100% - 22px); /* Full width minus padding */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
 
-/* Submit button styling */
-form input[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-}
+        /* Submit button styling */
+        form input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-form input[type="submit"]:hover {
-    background-color: #0056b3;
-}
+        form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
 
-/* Optional: Additional styles for consistency */
-form h2 {
-    text-align: center; /* Center the header text */
-    margin-bottom: 20px; /* Space below the header */
-    color: black; /* Set a color for the header */
-}
+        /* Optional: Additional styles for consistency */
+        form h2 {
+            text-align: center; /* Center the header text */
+            margin-bottom: 20px; /* Space below the header */
+            color: black; /* Set a color for the header */
+        }
 
-/* Error message box */
-.error-box {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 20px;
-}
+        /* Alert/Error Message Styling */
+        .alert {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #dc3545; /* Red border for error */
+            border-radius: 5px;
+            background-color: #f8d7da; /* Light red background */
+            color: #721c24; /* Dark red text color */
+            font-size: 16px; /* Adjust font size for readability */
+            line-height: 1.5; /* Improve readability */
+            text-align: center; /* Center align text */
+        }
 
-/* Info message box */
-.info-box {
-    background-color: #00008B;
-    color: white;
-    border: 1px solid #bee5eb;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 20px;
-}
+        .alert p {
+            margin: 0; /* Remove default margin from paragraphs */
+        }
 
-/* Print button styling */
+        /* Print button styling */
 #printButton {
     display: none;
     background-color: #007bff;
@@ -297,6 +302,17 @@ form h2 {
         top: 0;
     }
 }
+        .no-data-message {
+            background-color: #00008B; /* Match the color of the first info-box */
+            color: white; /* Match the text color of the first info-box */
+            border: 1px solid #bee5eb; /* Match the border color of the first info-box */
+            border-radius: 5px; /* Match the border radius of the first info-box */
+            padding: 15px; /* Match the padding of the first info-box */
+            margin-top: 20px; /* Match the margin of the first info-box */
+            font-size: 16px; /* Adjust the font size for consistency */
+            line-height: 1.5; /* Improve readability */
+            text-align: center; /* Center align text */
+        }
     </style>
 </head>
 <body>
@@ -351,24 +367,24 @@ form h2 {
     </div>
 
     <div class="dashboard-content">
-        <form action="bookinghistory.php" method="post">
-            <h1>Booking History</h1>
+        <form action="waitlisthistory.php" method="post">
+            <h1>Waitlist History</h1>
             <!-- Display the message if it exists -->
-            <?php if (!empty($message)) { echo $message; } ?>
+            <?php if (!empty($message)) { echo "<div class='alert'>$message</div>"; } ?>
 
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email to view booking history" required>
+            <input type="email" id="email" name="email" placeholder="Enter your email to view waitlist history" required>
             <input type="submit" value="View History">
         </form>
 
         <!-- Display the table and print button if they exist -->
         <div class="table-container<?php echo $showPrintIcon ? ' print-ready' : ''; ?>">
-            <?php if (!empty($tableContent)) { 
+            <?php if (!empty($table_html)) { 
                 echo "<div style='display: flex; align-items: center;'>";
-                echo "<h2 style='margin: 0;'>Your Booking History:</h2>";
+                echo "<h2 style='margin: 0;'>Your Waitlist History:</h2>";
                 echo "<button id='printButton'><i class='fas fa-print'></i> Print</button>";
                 echo "</div>";
-                echo $tableContent; 
+                echo $table_html; 
             } ?>
         </div>
     </div>

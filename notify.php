@@ -4,22 +4,35 @@ include 'connection.php';
 
 // Check if user email is set
 if (!isset($_SESSION['user_email'])) {
-    echo "User email is not set in session.";
+    header("Location: login.php");
     exit();
 }
 
-$user_email = $_SESSION['user_email']; // Fetch user email from session
+$user_email = $_SESSION['user_email'];
 
-// Function to fetch notifications
-function getNotifications($user_email) {
+// Function to fetch notifications for a specific user
+function getNotificationsForUser($user_email) {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT message, timestamp FROM notifications WHERE user_email = ? ORDER BY timestamp DESC");
+    $sql = "
+        SELECT message, timestamp 
+        FROM notifications
+        WHERE user_email = ?
+        ORDER BY timestamp DESC
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        die("Error preparing statement: " . htmlspecialchars($conn->error));
+    }
+
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     $notifications = [];
+
     while ($row = $result->fetch_assoc()) {
         $notifications[] = $row;
     }
@@ -28,17 +41,38 @@ function getNotifications($user_email) {
     return $notifications;
 }
 
-// Fetch notifications for the current user
-$notifications = getNotifications($user_email);
-?>
+// Handle form submission to clear notifications
+if (isset($_POST['clear_notifications']) && isset($_POST['confirm_clear']) && $_POST['confirm_clear'] == 'Yes') {
+    clearNotifications($user_email);
+    header("Location: notify.php");
+    exit();
+}
 
+// Function to clear all notifications for the current user
+function clearNotifications($user_email) {
+    global $conn;
+    $sql = "DELETE FROM notifications WHERE user_email = ?";
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt === false) {
+        die("Error preparing statement: " . htmlspecialchars($conn->error));
+    }
+    
+    $stmt->bind_param("s", $user_email);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// Fetch notifications for the current user and store them in $notifications
+$notifications = getNotificationsForUser($user_email);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Classes</title>
+    <title>Notifications</title>
     <link rel="icon" href="Images/ULK logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
@@ -47,20 +81,20 @@ $notifications = getNotifications($user_email);
         #sidebar {
             background-color: rgb(1, 1, 31);
             width: 250px;
-            height: calc(100vh - 14vh); /* Height minus header height */
+            height: calc(100vh - 14vh);
             position: fixed;
-            top: 14vh; /* Start below the header */
-            left: -250px; /* Hide by default */
+            top: 14vh;
+            left: -250px;
             transition: left 0.3s ease;
-            z-index: 999; /* Ensure it stays below header */
-            overflow-y: auto; /* Enable vertical scrolling */
-            overflow-x: hidden; /* Hide horizontal scrollbar if any */
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            z-index: 999;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         #sidebar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, and Opera */
+            display: none;
         }
 
         #sidebar h2 {
@@ -81,9 +115,9 @@ $notifications = getNotifications($user_email);
         }
 
         .dashboard-content {
-            margin-left: 0; /* Adjust for sidebar width */
+            margin-left: 0;
             padding: 20px;
-            padding-top: 14vh; /* Adjust for header height */
+            padding-top: 14vh;
             transition: margin-left 0.3s ease;
         }
 
@@ -95,17 +129,17 @@ $notifications = getNotifications($user_email);
             font-size: 30px;
             cursor: pointer;
             position: fixed;
-            top: 100px; /* Adjust to position the icon */
-            left: 20px; /* Adjust to position the icon */
-            z-index: 1001; /* Ensure it is above the sidebar */
+            top: 100px;
+            left: 20px;
+            z-index: 1001;
         }
 
         #menu-toggle:checked ~ #sidebar {
-            left: 0; /* Show sidebar */
+            left: 0;
         }
 
         #menu-toggle:checked ~ .dashboard-content {
-            margin-left: 250px; /* Adjust for sidebar width */
+            margin-left: 250px;
         }
 
         .hamburger-icon {
@@ -117,13 +151,14 @@ $notifications = getNotifications($user_email);
             display: block;
             width: 25px;
             height: 3px;
-            background: red;
+            background: black;
             margin: 5px 0;
             transition: 0.3s;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
             transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
@@ -132,11 +167,7 @@ $notifications = getNotifications($user_email);
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
-        }
-
-        .dashboard-content {
-            margin-left: 0;
-            padding: 20px;
+            background: white;
         }
 
         /* Notifications styling */
@@ -169,24 +200,47 @@ $notifications = getNotifications($user_email);
             padding: 10px;
             border-radius: 5px;
             font-size: 16px;
-            width: 100%; /* Ensure the box is full width within its container */
-            max-width: 600px; /* Set a maximum width for the box */
-            margin-left: auto; /* Center the box horizontally */
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
             margin-right: auto;
         }
 
         .message.success {
-            background-color: #d4edda; /* Light green background for success */
-            color: #155724; /* Dark green text for success */
-            border: 1px solid #c3e6cb; /* Green border for success */
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .message.error {
-            background-color: #f8d7da; /* Light red background for error */
-            color: #721c24; /* Dark red text for error */
-            border: 1px solid #f5c6cb; /* Red border for error */
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
+
+        /* Flexbox container for heading and button */
+        .heading-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .heading-container h2 {
+            margin: 0;
+        }
+
+        .heading-container .btn-danger {
+            font-size: 15px;
+            padding: 10px 10px;
+        }
+
     </style>
+    <script>
+        function confirmClear() {
+            return confirm("Are you sure you want to clear all notifications?");
+        }
+    </script>
 </head>
 <body>
     <div class="menu">
@@ -212,7 +266,7 @@ $notifications = getNotifications($user_email);
     <div id="sidebar">
         <h2>User Dashboard</h2>
         <ul class="nav flex-column">
-        <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="management.php">Home</a>
             </li>
             <li class="nav-item">
@@ -220,6 +274,9 @@ $notifications = getNotifications($user_email);
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="waitlist.php">Waitlist</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="waitlisthistory.php">Waitlist History</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="book.php">Book Resource</a>
@@ -237,9 +294,16 @@ $notifications = getNotifications($user_email);
     </div>
 
     <div class="dashboard-content">
-        <h2>Notifications</h2>
+        <div class="heading-container">
+            <h2>Notifications</h2>
+            <!-- Button to clear all notifications -->
+            <form method="post" action="" onsubmit="return confirmClear();">
+                <input type="hidden" name="confirm_clear" value="Yes">
+                <button type="submit" name="clear_notifications" class="btn btn-danger">Clear All Notifications</button>
+            </form>
+        </div>
+
         <?php
-        $notifications = getNotifications($user_email);
         if (!empty($notifications)) {
             foreach ($notifications as $notification) {
                 echo '<div class="notification">';

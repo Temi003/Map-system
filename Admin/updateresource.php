@@ -14,23 +14,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("is", $availability, $resource);
 
     if ($stmt->execute()) {
-        // Fetch waitlisted users for this resource
-        $stmt = $conn->prepare("SELECT email FROM waitlist WHERE resource = ?");
-        $stmt->bind_param("s", $resource);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        while ($row = $result->fetch_assoc()) {
-            $user_email = $row['email'];
-
-            // Insert notification for each waitlisted user
-            $stmt = $conn->prepare("INSERT INTO notifications (user_email, message, timestamp) VALUES (?, ?, NOW())");
-            $message = "The resource '$resource' is now available.";
-            $stmt->bind_param("ss", $user_email, $message);
+        if ($availability) {
+            // Fetch waitlisted users for this resource
+            $stmt = $conn->prepare("SELECT email, `reserved time` FROM waitlist WHERE resource = ?");
+            $stmt->bind_param("s", $resource);
             $stmt->execute();
-        }
+            $result = $stmt->get_result();
 
-        $message = "Resource availability updated and notifications sent.";
+            while ($row = $result->fetch_assoc()) {
+                $user_email = $row['email'];
+                $reserved_time = $row['reserved time'];
+                $booking_time = date("Y-m-d H:i:s"); // Set the current time for booking
+
+                // Insert booking for each waitlisted user
+                $stmt = $conn->prepare("INSERT INTO bookings (resource, email, booking_time) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $resource, $user_email, $booking_time);
+                $stmt->execute();
+
+                // Remove from waitlist
+                $stmt = $conn->prepare("DELETE FROM waitlist WHERE email = ? AND resource = ? AND `reserved time` = ?");
+                $stmt->bind_param("sss", $user_email, $resource, $reserved_time);
+                $stmt->execute();
+
+                // Insert notification for each waitlisted user
+                $stmt = $conn->prepare("INSERT INTO notifications (user_email, message, timestamp) VALUES (?, ?, NOW())");
+                $message = "The resource '$resource' is now available and has been booked for you.";
+                $stmt->bind_param("ss", $user_email, $message);
+                $stmt->execute();
+            }
+
+            $message = "Resource availability updated, bookings made, and notifications sent.";
+        } else {
+            $message = "Resource availability updated.";
+        }
     } else {
         $message = "Error updating resource availability: " . $stmt->error;
     }
@@ -46,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -128,25 +145,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 .hamburger-icon span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background: red;
-    margin: 5px 0;
-    transition: 0.3s;
-}
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: black;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
-    opacity: 0;
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+            background: white;
+        }
 
 
         .dashboard-content {
@@ -180,27 +199,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .hamburger-icon {
             display: inline-block;
             cursor: pointer;
-        }
-
-        .hamburger-icon span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: red;
-            margin: 5px 0;
-            transition: 0.3s;
-        }
-
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
-            transform: rotate(-45deg) translate(-5px, 6px);
-        }
-
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
-            opacity: 0;
-        }
-
-        #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
-            transform: rotate(45deg) translate(-5px, -6px);
         }
 
         .form-container {
@@ -310,7 +308,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-3">
                     <label for="resource" class="form-label">Resource:</label>
                     <select id="resource" name="resource" class="form-select" required>
-                        <option value="">Select a resource</option>
+                        <option value=""></option>
                         <option value="Room 305 4th floor">Room 305 4th floor</option>
                         <option value="Room 307 3rd floor">Room 307 3rd floor</option>
                         <option value="Lab 2">Lab 2</option>

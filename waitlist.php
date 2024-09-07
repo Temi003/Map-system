@@ -2,37 +2,60 @@
 // Include the database connection
 include 'connection.php';
 
-// Initialize message variable
-$message = '';
+// Initialize message variables
+$success_message = '';
+$error_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
     $resource = $_POST['resource'];
     $email = $_POST['email'];
+    $time = $_POST['time'];
 
-    // Prepare and bind
-    $stmt = $conn->prepare("INSERT INTO waitlist (resource, email) VALUES (?, ?)");
-    $stmt->bind_param("ss", $resource, $email);
+    // Check if the email of the current user matches the email in the form
+    session_start();
+    $current_user_email = $_SESSION['user_email']; // Assuming the user's email is stored in session
 
-    // Execute the statement and check for success
-    if ($stmt->execute()) {
-        $message = "You have been added to the waitlist.";
+    if ($email !== $current_user_email) {
+        // User is trying to waitlist for someone else
+        $error_message = "You can only waitlist for yourself.";
     } else {
-        $message = "Error: " . $stmt->error;
+        // Check if the user is already on the waitlist for the same resource at the same time
+        $stmt = $conn->prepare("SELECT * FROM waitlist WHERE email = ? AND resource = ? AND `reserved time` = ?");
+        $stmt->bind_param("sss", $email, $resource, $time);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $error_message = "You are already on the waitlist for this resource at this time.";
+        } else {
+            // Prepare and bind
+            $stmt = $conn->prepare("INSERT INTO waitlist (resource, email, `reserved time`) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $resource, $email, $time);
+
+            // Execute the statement and check for success
+            if ($stmt->execute()) {
+                $success_message = "You have been added to the waitlist.";
+            } else {
+                $error_message = "Error: " . $stmt->error;
+            }
+
+            // Close statement
+            $stmt->close();
+        }
     }
 
-    // Close statement and connection
-    $stmt->close();
+    // Close connection
     $conn->close();
 
     // Redirect to the form page with a message
-    header("Location: waitlist.php?message=" . urlencode($message) . "&type=" . (strpos($message, 'Error') === false ? 'success' : 'error'));
+    header("Location: waitlist.php?success_message=" . urlencode($success_message) . "&error_message=" . urlencode($error_message));
     exit();
 }
 
-// Get the message and type from the URL query string if they exist
-$message = isset($_GET['message']) ? $_GET['message'] : '';
-$type = isset($_GET['type']) ? $_GET['type'] : '';
+// Get the messages from the URL query string if they exist
+$success_message = isset($_GET['success_message']) ? $_GET['success_message'] : '';
+$error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -119,13 +142,14 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
             display: block;
             width: 25px;
             height: 3px;
-            background: red;
+            background: black;
             margin: 5px 0;
             transition: 0.3s;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
             transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
@@ -134,6 +158,7 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
+            background: white;
         }
 
         .dashboard-content h2 {
@@ -149,7 +174,7 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
             justify-content: center; /* Center form horizontally */
             margin-top: 0; /* Adjust space above the form container as needed */
             padding: 20px; /* Optional: Add padding around the form container */
-            margin: -4% auto;
+            margin: -6% auto;
         }
 
         .waitlist form {
@@ -175,7 +200,8 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
         }
 
         .waitlist input[type="email"],
-        .waitlist select {
+        .waitlist select,
+        .waitlist input[type="datetime-local"] {
             width: calc(100% - 22px);
             padding: 10px;
             border: 1px solid #ccc;
@@ -257,6 +283,9 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
                 <a class="nav-link" href="waitlist.php">Waitlist</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="waitlisthistory.php">Waitlist History</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="book.php">Book Resource</a>
             </li>
             <li class="nav-item">
@@ -274,20 +303,27 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
         <div class="waitlist">
             <form action="waitlist.php" method="post">
                 <h1>Waitlist Form</h1>
-                <?php if (!empty($message)): ?>
-                    <div class="message <?= htmlspecialchars($type) ?>">
-                        <?= htmlspecialchars($message) ?>
+                <?php if (!empty($success_message)): ?>
+                    <div class="message success">
+                        <?= htmlspecialchars($success_message) ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($error_message)): ?>
+                    <div class="message error">
+                        <?= htmlspecialchars($error_message) ?>
                     </div>
                 <?php endif; ?>
                 <label for="resource">Resource:</label>
                 <select id="resource" name="resource" required>
-                    <option value="">Resource</option>
+                    <option value=""></option>
                     <option value="Room 305 4th floor">Room 305 4th floor</option>
                     <option value="Room 307 3rd floor">Room 307 3rd floor</option>
                     <option value="Lab 2">Lab 2</option>
-                </select><br><br>
+                </select><br>
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required><br><br>
+                <input type="email" id="email" name="email" required><br>
+                <label for="time">Reserved Time:</label>
+                <input type="datetime-local" id="time" name="time" required><br><br>
                 <input type="submit" value="Join Waitlist">
             </form>
         </div>

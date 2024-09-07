@@ -116,25 +116,27 @@ $conn->close();
 }
 
 .hamburger-icon span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background: red;
-    margin: 5px 0;
-    transition: 0.3s;
-}
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: black;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
-    opacity: 0;
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+        }
 
-#menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
-}
+        #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+            background: white;
+        }
 
 
         .dashboard-content {

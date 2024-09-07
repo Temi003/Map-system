@@ -8,16 +8,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resource = $_POST['resource'];
     $booking_time = $_POST['booking_time'];
 
-    // Insert booking into the database
-    $stmt = $conn->prepare("INSERT INTO bookings (email, resource, booking_time) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $email, $resource, $booking_time);
-    if ($stmt->execute()) {
-        $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+    // Get current user email from session
+    session_start();
+    $current_user_email = $_SESSION['user_email']; // Assuming the user's email is stored in session
+
+    if ($email !== $current_user_email) {
+        // User is trying to book for someone else
+        $alertMessage = "<p class='alert alert-danger'>You can only book for yourself.</p>";
     } else {
-        $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
+        // Check if the user already has a booking for the same resource at the same time
+        $stmt = $conn->prepare("SELECT * FROM bookings WHERE email = ? AND resource = ? AND booking_time = ?");
+        $stmt->bind_param("sss", $email, $resource, $booking_time);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // User already has a booking for this resource at this time
+            $alertMessage = "<p class='alert alert-danger'>You already have a booking for this resource at this time.</p>";
+        } else {
+            // Insert booking into the database
+            $stmt = $conn->prepare("INSERT INTO bookings (email, resource, booking_time) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $email, $resource, $booking_time);
+            if ($stmt->execute()) {
+                $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+            } else {
+                $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
+            }
+            $stmt->close();
+        }
+        $conn->close();
     }
-    $stmt->close();
-    $conn->close();
 }
 ?>
 
@@ -105,13 +125,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: block;
             width: 25px;
             height: 3px;
-            background: red;
+            background: black;
             margin: 5px 0;
             transition: 0.3s;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
             transform: rotate(-45deg) translate(-5px, 6px);
+            background: white;
         }
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
@@ -120,6 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
+            background: white;
         }
 
         .table-container {
@@ -227,6 +249,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a class="nav-link" href="waitlist.php">Waitlist</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="waitlisthistory.php">Waitlist History</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="book.php">Book Resource</a>
             </li>
             <li class="nav-item">
@@ -253,8 +278,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
             
-            <label for="resource">Resource</label>
-            <input type="text" id="resource" name="resource" placeholder="Enter the resource name" required>
+            <label for="resource">Resource:</label>
+                <select id="resource" name="resource" required>
+                    <option value=""></option>
+                    <option value="Room 305 4th floor">Room 305 4th floor</option>
+                    <option value="Room 307 3rd floor">Room 307 3rd floor</option>
+                    <option value="Lab 2">Lab 2</option>
+                </select>
             
             <label for="booking_time">Booking Time</label>
             <input type="datetime-local" id="booking_time" name="booking_time" required>

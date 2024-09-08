@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2024 at 05:13 AM
+-- Generation Time: Sep 08, 2024 at 09:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -39,7 +39,10 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `resource`, `email`, `booking_time`) VALUES
-(3, 'Room 305 4th floor', 'temidudu2003@gmail.com', '2024-09-07 06:46:00');
+(3, 'Room 305 4th floor', 'temidudu2003@gmail.com', '2024-09-07 06:46:00'),
+(4, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-08 16:30:07'),
+(5, 'Lab 2', 'agbelusitomisin@gmail.com', '2024-09-08 16:31:50'),
+(6, 'Lab 2', 'temidudu2003@gmail.com', '2024-09-08 16:31:50');
 
 -- --------------------------------------------------------
 
@@ -65,11 +68,19 @@ CREATE TABLE `classes` (
 --
 
 CREATE TABLE `contact us` (
+  `id` int(30) NOT NULL,
   `First Name` varchar(30) NOT NULL,
   `Last Name` varchar(30) NOT NULL,
   `Email` varchar(50) NOT NULL,
   `Message` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `contact us`
+--
+
+INSERT INTO `contact us` (`id`, `First Name`, `Last Name`, `Email`, `Message`) VALUES
+(1, 'tomisin', 'Agbelusi', 'agbelusitomisin@gmail.com', 'nn');
 
 -- --------------------------------------------------------
 
@@ -82,15 +93,17 @@ CREATE TABLE `employees` (
   `First Name` varchar(30) NOT NULL,
   `Last Name` varchar(30) NOT NULL,
   `Email` varchar(30) NOT NULL,
-  `Password` varchar(20) NOT NULL
+  `Password` varchar(20) NOT NULL,
+  `Role` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`Employee_ID`, `First Name`, `Last Name`, `Email`, `Password`) VALUES
-(1, 'Temidayo', 'Agbelusi', 'agbelusitemidayo@gmail.com', '12345');
+INSERT INTO `employees` (`Employee_ID`, `First Name`, `Last Name`, `Email`, `Password`, `Role`) VALUES
+(1, 'Temidayo', 'Agbelusi', 'agbelusitemidayo@gmail.com', '12345', '0'),
+(2, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '0000', 'admin');
 
 -- --------------------------------------------------------
 
@@ -110,7 +123,7 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_email`, `message`, `timestamp`) VALUES
-(1, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you.', '2024-09-07 15:52:20');
+(4, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you.', '2024-09-08 16:31:50');
 
 -- --------------------------------------------------------
 
@@ -155,16 +168,18 @@ CREATE TABLE `users` (
   `DOB` date NOT NULL,
   `Roll Number` int(10) NOT NULL,
   `Email` varchar(30) NOT NULL,
-  `Password` varchar(30) NOT NULL
+  `Password` varchar(30) NOT NULL,
+  `role` varchar(50) NOT NULL DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`) VALUES
-('Tomisin', 'Agbelusi', '2005-12-24', 202111067, 'agbelusitomisin@gmail.com', '0000'),
-('Temidayo', 'Agbelusi', '2003-01-22', 202111068, 'temidudu2003@gmail.com', '0000');
+INSERT INTO `users` (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `role`) VALUES
+('tomisin', 'Agbelusi', '2024-09-28', 23, 'agbelusitomisin@gmail.com', '0000', 'user'),
+('Tomisin', 'Agbelusi', '2005-12-24', 202111067, 'agbelusitomisin@gmail.com', '0000', 'user'),
+('Temidayo', 'Agbelusi', '2003-01-22', 202111068, 'temidudu2003@gmail.com', '0000', 'user');
 
 -- --------------------------------------------------------
 
@@ -177,16 +192,8 @@ CREATE TABLE `waitlist` (
   `resource` varchar(255) NOT NULL,
   `reserved time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `email` varchar(255) NOT NULL,
-  `signup_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `notified` tinyint(1) DEFAULT 0
+  `signup_time` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `waitlist`
---
-
-INSERT INTO `waitlist` (`id`, `resource`, `reserved time`, `email`, `signup_time`, `notified`) VALUES
-(3, 'Room 307 3rd floor', '2024-09-07 05:30:00', 'temidudu2003@gmail.com', '2024-09-07 17:30:11', 0);
 
 --
 -- Indexes for dumped tables
@@ -209,6 +216,12 @@ ALTER TABLE `classes`
   ADD UNIQUE KEY `unique_lecturer_name` (`Lecturer Name`),
   ADD UNIQUE KEY `unique_class_year` (`Class Year`),
   ADD UNIQUE KEY `unique_class_room` (`Resource`);
+
+--
+-- Indexes for table `contact us`
+--
+ALTER TABLE `contact us`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `employees`
@@ -255,7 +268,7 @@ ALTER TABLE `waitlist`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -264,16 +277,22 @@ ALTER TABLE `classes`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `contact us`
+--
+ALTER TABLE `contact us`
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `Employee_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Employee_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `resources`
@@ -297,7 +316,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `waitlist`
 --
 ALTER TABLE `waitlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

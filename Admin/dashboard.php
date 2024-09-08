@@ -1,4 +1,5 @@
 <?php
+// In admin_dashboard.php
 session_start();
 
 // Prevent caching
@@ -7,11 +8,12 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
-// Check if the user is not logged in, redirect to the login page
-if (!isset($_SESSION['email'])) {
+// Check if the user is logged in and has admin privileges
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,9 +57,9 @@ if (!isset($_SESSION['email'])) {
             text-decoration: none;
         }
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
 
         .dashboard-content {
@@ -246,6 +248,9 @@ if (!isset($_SESSION['email'])) {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="ticket.php">Tickets</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="management.php">User Dashboard</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>

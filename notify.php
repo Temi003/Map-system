@@ -109,9 +109,9 @@ $notifications = getNotificationsForUser($user_email);
             text-decoration: none;
         }
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
 
         .dashboard-content {

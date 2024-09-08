@@ -64,6 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Sidebar styling */
         #sidebar {
@@ -97,9 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-decoration: none;
         }
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
 
         .dashboard-content {
@@ -188,115 +190,129 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         /* Form styling */
-form {
-    max-width: 600px; /* Limit the maximum width of the form */
-    width: 100%; /* Ensure the form takes the full width of its container */
-    padding: 20px;
-    background: #f8f9fa; /* Background color */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Shadow effect */
-    margin: 1% auto; /* Center the form horizontally */
-}
+        form {
+            max-width: 600px; /* Limit the maximum width of the form */
+            width: 100%; /* Ensure the form takes the full width of its container */
+            padding: 20px;
+            background: #f8f9fa; /* Background color */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            margin: 1% auto; /* Center the form horizontally */
+        }
 
-/* Label styling */
-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
+        /* Label styling */
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-form h1{
-    text-align: center; /* Center text horizontally */
+        form h1 {
+            text-align: center; /* Center text horizontally */
             margin-bottom: 20px; /* Space below the heading */
             margin-top: 0; /* Remove space above the heading */
-}
+        }
 
-/* Input fields styling */
-form input[type="email"],
-form input[type="submit"] {
-    width: calc(100% - 22px); /* Full width minus padding */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 16px;
-}
+        /* Input fields styling */
+        form input[type="email"],
+        form input[type="submit"] {
+            width: calc(100% - 22px); /* Full width minus padding */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
 
-/* Submit button styling */
-form input[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-}
+        /* Submit button styling */
+        form input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-form input[type="submit"]:hover {
-    background-color: #0056b3;
-}
+        form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
 
-/* Optional: Additional styles for consistency */
-form h2 {
-    text-align: center; /* Center the header text */
-    margin-bottom: 20px; /* Space below the header */
-    color: black; /* Set a color for the header */
-}
+        /* Optional: Additional styles for consistency */
+        form h2 {
+            text-align: center; /* Center the header text */
+            margin-bottom: 20px; /* Space below the header */
+            color: black; /* Set a color for the header */
+        }
 
-/* Error message box */
-.error-box {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 20px;
-}
+        /* Error message box */
+        .error-box {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
 
-/* Info message box */
-.info-box {
-    background-color: #00008B;
-    color: white;
-    border: 1px solid #bee5eb;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 20px;
-}
+        /* Info message box */
+        .info-box {
+            background-color: #00008B;
+            color: white;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
 
-/* Print button styling */
-#printButton {
-    display: none;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-bottom: -1%;
-    margin-left: 60%;
-    width: 7%;
-}
+        /* Print and Download button styling */
+        #printButton, #downloadButton {
+            display: none;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto; /* Adjust width to fit content */
+            height: 40px; /* Ensure both buttons have the same height */
+        }
 
-.table-container.print-ready #printButton {
-    display: inline-block;
-}
+        /* Show both buttons and position them */
+        .table-container.print-ready #printButton,
+        .table-container.print-ready #downloadButton {
+            display: inline-block;
+            margin-left: 10px; /* Add spacing between buttons */
+        }
 
-/* Print styling */
-@media print {
-    #printButton {
-        display: none;
-    }
-    body * {
-        visibility: hidden;
-    }
-    .table-container, .table-container * {
-        visibility: visible;
-    }
-    .table-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-}
+        .table-container .button-container {
+            display: flex;
+            justify-content: flex-start; /* Align buttons to the left or right */
+            margin-bottom: 20px; /* Space below the buttons */
+        }
+
+        /* Optional: Additional styles for consistency */
+        .hide-when-printing {
+            display: none;
+        }
+
+        /* Print styling */
+        @media print {
+            #printButton, #downloadButton {
+                display: none; /* Hide buttons when printing */
+            }
+            body * {
+                visibility: hidden; /* Hide all content */
+            }
+            .table-container, .table-container * {
+                visibility: visible; /* Show only table content */
+            }
+            .table-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%; /* Ensure the table takes full width */
+            }
+        }
     </style>
 </head>
 <body>
@@ -366,20 +382,42 @@ form h2 {
             <?php if (!empty($tableContent)) { 
                 echo "<div style='display: flex; align-items: center;'>";
                 echo "<h2 style='margin: 0;'>Your Booking History:</h2>";
-                echo "<button id='printButton'><i class='fas fa-print'></i> Print</button>";
                 echo "</div>";
-                echo $tableContent; 
+                echo $tableContent;
+                echo "<div class='button-container'>";
+                echo "<button id='printButton'><i class='fas fa-print'></i> Print</button>";
+                echo "<button id='downloadButton'><i class='fas fa-download'></i> Download</button>";
+                echo "</div>";
             } ?>
         </div>
     </div>
 
-    <!-- JavaScript to handle the print button functionality -->
+    <!-- JavaScript to handle the buttons functionality -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var printButton = document.getElementById('printButton');
+            var downloadButton = document.getElementById('downloadButton');
+
             if (printButton) {
                 printButton.addEventListener('click', function () {
                     window.print();
+                });
+            }
+
+            if (downloadButton) {
+                downloadButton.addEventListener('click', function () {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Capture the table HTML and download
+                    html2canvas(document.querySelector('.table-container')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 10, 20, 180, 0);
+                        doc.save('booking-history.pdf');
+                    }).catch(function (error) {
+                        alert('An error occurred while downloading. Please try again.');
+                        console.error('Error capturing the table:', error);
+                    });
                 });
             }
         });

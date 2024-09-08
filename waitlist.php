@@ -100,11 +100,10 @@ $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
             text-decoration: none;
         }
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
-
         .dashboard-content {
             margin-left: 0; /* Adjust for sidebar width */
             padding: 20px;

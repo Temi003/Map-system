@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = mysqli_real_escape_string($conn, $_POST['password']);
 
     // Prepare and execute the query to find the user by email
-    $stmt = $conn->prepare("SELECT Email, Password, `First name` FROM users WHERE Email = ?");
+    $stmt = $conn->prepare("SELECT Email, Password, `First name`, `Role` FROM users WHERE Email = ?");
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
@@ -19,17 +19,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->store_result();
 
     if ($stmt->num_rows == 1) {
-        $stmt->bind_result($db_email, $db_password, $db_firstname);
+        $stmt->bind_result($db_email, $db_password, $db_firstname, $db_role);
         $stmt->fetch();
 
-        // Compare the entered password with the stored password
+        // Use password_verify if passwords are hashed
         if ($password === $db_password) {
             // Set session variables
             $_SESSION['user_email'] = $email;
             $_SESSION['firstname'] = $db_firstname; // Store first name in session
+            $_SESSION['role'] = $db_role; // Store user role in session
             
-            // Redirect to the notifications page after successful login
-            header("Location: management.php");
+            // Redirect based on role
+            if ($db_role === 'admin') {
+                header("Location: Admin/dashboard.php");
+            } else {
+                header("Location: management.php");
+            }
             exit();
         } else {
             $error = "Invalid password.";
@@ -54,8 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        .login-container{
+        .login-container {
             margin: 1% auto;
+            height: auto;
+            max-width: 400px;
         }
         .back-button {
             width: 50px;
@@ -85,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         button[type="submit"]:hover {
             background-color: #007399;
         }
-        </style>
+    </style>
 </head>
 <body>
     <div class="menu">
@@ -106,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </a>
     
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>User Login</h2>
 
         <!-- Display message if any -->
         <?php if (!empty($error)): ?>

@@ -133,7 +133,111 @@ body {
   .main .btn-locate:hover {
     background-color: #0099cc; /* Change background color on hover */
   }
+  /* Menu options styling */
+  .menu-options {
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    z-index: 1; /* Stack above background video */
+    margin-left: 30%; /* Margin to the left */
+  }
   
+  /* Menu options heading styling */
+  .menu-options h1 {
+    font-size: 50px; /* Font size */
+    margin-bottom: 20px; /* Margin below heading */
+    color: #0099cc; /* Font color */
+    font-weight: bold; /* Bold font weight */
+  }
+  
+  /* Menu button styling */
+  .menu-button {
+    background-color: #00bfff; /* Background color */
+    color: black; /* Text color */
+    padding: 20px 40px; /* Padding inside button */
+    border: none; /* Remove border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 25px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    margin-bottom: 20px; /* Margin below button */
+    font-weight: bold; /* Bold font weight */
+    transition: 2s; /* Transition duration */
+    margin: 0 auto;
+  }
+  
+  /* Hover effect for menu button */
+  .menu-button:hover {
+    background-color: #0099cc; /* Change background color on hover */
+  }
+  
+  /* Map styling */
+  #map {
+    width: 100%; /* Full width */
+    height: 82vh; /* Height relative to viewport height */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid black; /* Border styling */
+    position: absolute; /* Absolute positioning */
+    display: flex; /* Flexbox layout */
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+  }
+  
+  /* Container for the map */
+  .map-container {
+    position: relative; /* Relative positioning */
+    width: 99.5%; /* Width of the container */
+    height: 100%; /* Full height */
+  }
+  
+  /* Directions control styling */
+  .mapboxgl-ctrl-directions {
+    position: absolute; /* Absolute positioning */
+    top: 10px; /* Top alignment */
+    left: 10px; /* Left alignment */
+    width: 75%; /* Width of the control */
+    height: 50%; /* Height of the control */
+  }
+  
+  /* Map styling */
+  #map {
+    width: 100%; /* Full width */
+    height: 82vh; /* Height relative to viewport height */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid black; /* Border styling */
+    position: absolute; /* Absolute positioning */
+    display: flex; /* Flexbox layout */
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+  }
+  
+  /* Container for the map */
+  .map-container {
+    position: relative; /* Relative positioning */
+    width: 99.5%; /* Width of the container */
+    height: 100%; /* Full height */
+  }
+  
+  /* Directions control styling */
+  .mapboxgl-ctrl-directions {
+    position: absolute; /* Absolute positioning */
+    top: 10px; /* Top alignment */
+    left: 10px; /* Left alignment */
+    width: 75%; /* Width of the control */
+    height: 50%; /* Height of the control */
+  }
+  
+  /* Hamburger menu styling (hidden by default) */
+  .hamburger {
+    display: none; /* Hidden by default */
+    background: none; /* No background */
+    border: none; /* No border */
+    font-size: 30px; /* Font size */
+    cursor: pointer
+  
+  ; /* Pointer cursor */
+    color: #0099cc; /* Text color */
+    margin-left: 50px; /* Margin to the left */
+  }
 
   /* Hamburger menu styling (hidden by default) */
   .hamburger {

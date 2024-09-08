@@ -127,48 +127,10 @@ mysqli_close($conn);
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                 </div>
-                <!-- <div class="input-group">
-                    <label for="email">Confirm Email</label>
-                    <input type="email" id="email" name="email" placeholder="Confirm your Email" required>
-                </div> -->
-            <!-- <div class="row">
-                <div class="input-group">
-                    <label for="course">Course </label>
-                    <select id="course" name="course" required>
-                        <option value="">Course</option>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="program">Program </label>
-                    <select id="program" name="program" required>
-                        <option value="">Program</option>
-                        <option value="UNDERGRADUATE">Bachelor</option>
-                        <option value="MASTERS">Master</option>
-                        <option value="POLYTECHNIC">PhD</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="year">Year </label>
-                    <select id="year" name="year" required>
-                        <option value="">Year</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
-                </div>
-            </div> -->
                 <div class="input-group">
                     <label for="new-password">Password</label>
                     <input type="password" id="new-password" name="password" placeholder="Enter your password" required>
                 </div>
-                <!-- <div class="input-group">
-                    <label for="confirm-password">Confirm Password</label>
-                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
-                </div> -->
             <button type="submit" name="submit">Sign Up</button>
         </form>
     </div>

@@ -71,6 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="icon" href="Images/ULK logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Add this line for Font Awesome -->
     <style>
         /* Sidebar styling */
@@ -104,10 +106,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 10px 20px;
             text-decoration: none;
         }
-
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
 
         .dashboard-content {
@@ -267,8 +268,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0; /* Remove default margin from paragraphs */
         }
 
-        /* Print button styling */
-#printButton {
+        /* Print and Download button styling */
+#printButton, #downloadButton {
     display: none;
     background-color: #007bff;
     color: white;
@@ -276,33 +277,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     padding: 10px 20px;
     cursor: pointer;
     font-size: 14px;
-    margin-bottom: -1%;
-    margin-left: 60%;
-    width: 7%;
+    width: auto; /* Adjust width to fit content */
+    height: 40px; /* Ensure both buttons have the same height */
 }
 
-.table-container.print-ready #printButton {
+/* Show both buttons and position them */
+.table-container.print-ready #printButton,
+.table-container.print-ready #downloadButton {
     display: inline-block;
+    margin-left: 10px; /* Add spacing between buttons */
+}
+
+.table-container .button-container {
+    display: flex;
+    justify-content: flex-start; /* Align buttons to the left or right */
+    margin-bottom: 20px; /* Space below the buttons */
+}
+
+/* Optional: Additional styles for consistency */
+.hide-when-printing {
+    display: none;
 }
 
 /* Print styling */
 @media print {
-    #printButton {
-        display: none;
+    #printButton, #downloadButton {
+        display: none; /* Hide buttons when printing */
     }
     body * {
-        visibility: hidden;
+        visibility: hidden; /* Hide all content */
     }
     .table-container, .table-container * {
-        visibility: visible;
+        visibility: visible; /* Show only table content */
     }
     .table-container {
         position: absolute;
         left: 0;
         top: 0;
+        width: 100%; /* Ensure the table takes full width */
     }
 }
-        .no-data-message {
+
+.no-data-message {
             background-color: #00008B; /* Match the color of the first info-box */
             color: white; /* Match the text color of the first info-box */
             border: 1px solid #bee5eb; /* Match the border color of the first info-box */
@@ -313,6 +329,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             line-height: 1.5; /* Improve readability */
             text-align: center; /* Center align text */
         }
+
     </style>
 </head>
 <body>
@@ -379,26 +396,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <!-- Display the table and print button if they exist -->
         <div class="table-container<?php echo $showPrintIcon ? ' print-ready' : ''; ?>">
-            <?php if (!empty($table_html)) { 
-                echo "<div style='display: flex; align-items: center;'>";
-                echo "<h2 style='margin: 0;'>Your Waitlist History:</h2>";
-                echo "<button id='printButton'><i class='fas fa-print'></i> Print</button>";
-                echo "</div>";
-                echo $table_html; 
-            } ?>
-        </div>
-    </div>
+    <?php if (!empty($table_html)) { 
+        echo "<div style='display: flex; align-items: center;'>";
+        echo "<h2 style='margin: 0;'>Your Waitlist History:</h2>";
+        echo "</div>";
+        echo $table_html;
+        echo "<div>"; // Corrected this line
+        echo "<button id='printButton'><i class='fas fa-print'></i> Print</button>";
+        echo "<button id='downloadButton'><i class='fas fa-download'></i> Download</button>";
+        echo "</div>"; // Corrected this line
+    } ?>
+</div>
+
 
     <!-- JavaScript to handle the print button functionality -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var printButton = document.getElementById('printButton');
-            if (printButton) {
-                printButton.addEventListener('click', function () {
-                    window.print();
-                });
-            }
+         document.addEventListener('DOMContentLoaded', function () {
+    var printButton = document.getElementById('printButton');
+    var downloadButton = document.getElementById('downloadButton');
+
+    if (printButton) {
+        printButton.addEventListener('click', function () {
+            window.print();
         });
+    }
+
+    if (downloadButton) {
+        downloadButton.addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Capture the table HTML and download
+            html2canvas(document.querySelector('.table-container')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                doc.addImage(imgData, 'PNG', 10, 20, 180, 0);
+                doc.save('waitlist-history.pdf');
+            }).catch(function (error) {
+                alert('An error occurred while downloading. Please try again.');
+                console.error('Error capturing the table:', error);
+            });
+        });
+    }
+});
+
     </script>
 </body>
 </html>

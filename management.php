@@ -1,4 +1,5 @@
 <?php
+// In user_dashboard.php
 session_start();
 
 // Prevent caching
@@ -7,9 +8,8 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
-
-// Check if the user is not logged in, redirect to the login page
-if (!isset($_SESSION['firstname'])) {
+// Check if the user is logged in and has user privileges
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: login.php");
     exit();
 }

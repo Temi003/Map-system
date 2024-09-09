@@ -16,30 +16,122 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // User is trying to book for someone else
         $alertMessage = "<p class='alert alert-danger'>You can only book for yourself.</p>";
     } else {
-        // Check if the user already has a booking for the same resource at the same time
-        $stmt = $conn->prepare("SELECT * FROM bookings WHERE email = ? AND resource = ? AND booking_time = ?");
-        $stmt->bind_param("sss", $email, $resource, $booking_time);
+        // Retrieve current user's class from the users table
+        $stmt = $conn->prepare("SELECT class FROM users WHERE email = ?");
+        if (!$stmt) {
+            die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+        }
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user_class = $result->fetch_assoc()['class']; // Assuming the class is stored in a 'class' column
+        $stmt->close();
+
+        // Check if another booking exists for the same resource and time from a different class
+        $stmt = $conn->prepare(
+            "SELECT users.class 
+             FROM bookings 
+             JOIN users ON bookings.email = users.email 
+             WHERE bookings.resource = ? AND bookings.booking_time = ?"
+        );
+        if (!$stmt) {
+            die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+        }
+        $stmt->bind_param("ss", $resource, $booking_time);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // User already has a booking for this resource at this time
-            $alertMessage = "<p class='alert alert-danger'>You already have a booking for this resource at this time.</p>";
+            // There is at least one booking for this resource at this time
+            $existing_booking_class = $result->fetch_assoc()['class'];
+            if ($existing_booking_class !== $user_class) {
+                // Different class is trying to book the same resource at the same time
+                $alertMessage = "<p class='alert alert-danger'>This resource is already booked by someone from a different class. You have been added to the waitlist.</p>";
+
+                // Add the user to the waitlist
+                $stmt->close();
+                $stmt = $conn->prepare("INSERT INTO waitlist (email, resource, `reserved time`) VALUES (?, ?, ?)");
+                if (!$stmt) {
+                    die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+                }
+                $stmt->bind_param("sss", $email, $resource, $booking_time);
+                $stmt->execute();
+            } else {
+                // Same class can book the same resource at the same time
+                $alertMessage = "<p class='alert alert-success'>Booking successful! Another user from your class has already booked this resource at the same time.</p>";
+
+                // Insert the booking into the database
+                $stmt->close();
+                $stmt = $conn->prepare("INSERT INTO bookings (email, resource, booking_time) VALUES (?, ?, ?)");
+                if (!$stmt) {
+                    die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+                }
+                $stmt->bind_param("sss", $email, $resource, $booking_time);
+                if ($stmt->execute()) {
+                    // Insert a notification into the notifications table
+                    $stmt->close(); // Close the previous statement before preparing a new one
+                    
+                    // Format booking_time if needed
+                    $formatted_booking_time = date('Y-m-d H:i', strtotime($booking_time)); // Adjust format as needed
+
+                    // Create the notification message
+                    $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
+
+                    $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+                    if (!$stmt) {
+                        die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+                    }
+                    $stmt->bind_param("ss", $current_user_email, $notificationMessage);
+                    if ($stmt->execute()) {
+                        $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+                    } else {
+                        $alertMessage = "<p class='alert alert-danger'>Error: Could not insert notification.</p>";
+                    }
+                } else {
+                    $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
+                }
+            }
         } else {
-            // Insert booking into the database
+            // No existing booking, proceed with the booking
+            $stmt->close();
             $stmt = $conn->prepare("INSERT INTO bookings (email, resource, booking_time) VALUES (?, ?, ?)");
+            if (!$stmt) {
+                die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+            }
             $stmt->bind_param("sss", $email, $resource, $booking_time);
             if ($stmt->execute()) {
-                $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+                // Insert a notification into the notifications table
+                $stmt->close(); // Close the previous statement before preparing a new one
+
+                // Format booking_time if needed
+                $formatted_booking_time = date('Y-m-d H:i', strtotime($booking_time)); // Adjust format as needed
+
+                // Create the notification message
+                $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
+
+                $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+                if (!$stmt) {
+                    die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
+                }
+                $stmt->bind_param("ss", $current_user_email, $notificationMessage);
+                if ($stmt->execute()) {
+                    $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+                } else {
+                    $alertMessage = "<p class='alert alert-danger'>Error: Could not insert notification.</p>";
+                }
             } else {
                 $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
             }
-            $stmt->close();
         }
-        $conn->close();
+        $stmt->close(); // Close the statement after the final operation
+        $conn->close(); // Close the connection
     }
 }
 ?>
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">

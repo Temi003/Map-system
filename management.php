@@ -1,5 +1,4 @@
 <?php
-// Start the session
 session_start();
 
 // Prevent caching
@@ -12,8 +11,6 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
-
-// Continue with the protected page content
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +24,7 @@ if (!isset($_SESSION['email'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        h2{
+        h2 {
             color: black;
         }
     </style>
@@ -51,19 +48,21 @@ if (!isset($_SESSION['email'])) {
             <video autoplay muted loop class="background-video">
                 <source src="videos/mag 1.mp4" type="video/mp4">
             </video>
-    <div class="main" style="width: 40%;">
-        
-        <div class="box">
-	     <div style="font-size: 40px; font-weight: bold; color: #0099cc;">
-	     	<br>
-        Hello, <?php echo $_SESSION['firstname']; ?>
-	    </div>
-            <h2>Resource Management</h2>
-            <p>Manage and locate resources efficiently.</p>
-            <a href="resource.php" class="btn-locate">Manage</a>
-            <div class="dashboard-content">
-                
+            <div class="main" style="width: 40%;">
+                <div class="box">
+                    <div style="font-size: 40px; font-weight: bold; color: #0099cc;">
+                        <br>
+                        Hello, <?php echo htmlspecialchars($_SESSION['firstname']); ?>
+                    </div>
+                    <h2>Resource Management</h2>
+                    <p>Manage and locate resources efficiently.</p>
+                    <a href="resource.php" class="btn-locate">Manage</a>
+                    <div class="dashboard-content">
+                        <!-- Dashboard content -->
+                    </div>
+                </div>
             </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>

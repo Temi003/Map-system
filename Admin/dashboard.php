@@ -250,9 +250,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 <a class="nav-link" href="ticket.php">Tickets</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="management.php">User Dashboard</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="logout.php">Logout</a>
             </li>
         </ul>

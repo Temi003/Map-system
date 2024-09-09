@@ -1,52 +1,52 @@
 <?php
+// Start the session
+session_start();
+
+// Include the database connection file
 include("connection.php");
-session_start(); // Start the session
 
 // Initialize error message
-$error = '';
+$error = "";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve email and password from form
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
     // Prepare and execute the query to find the user by email
-    $stmt = $conn->prepare("SELECT Email, Password, `First name`, `Role` FROM users WHERE Email = ?");
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
+    $stmt = $conn->prepare("SELECT `First Name`, Password FROM users WHERE Email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
+    $stmt->bind_result($db_firstname, $db_password);
 
-    if ($stmt->num_rows == 1) {
-        $stmt->bind_result($db_email, $db_password, $db_firstname, $db_role);
+    if ($stmt->num_rows === 1) {
         $stmt->fetch();
 
-        // Use password_verify if passwords are hashed
+        // Compare the entered password directly with the stored password
         if ($password === $db_password) {
             // Set session variables
             $_SESSION['user_email'] = $email;
             $_SESSION['firstname'] = $db_firstname; // Store first name in session
-            $_SESSION['role'] = $db_role; // Store user role in session
-            
-            // Redirect based on role
-            if ($db_role === 'admin') {
-                header("Location: Admin/dashboard.php");
-            } else {
-                header("Location: management.php");
-            }
+
+            // Redirect to a default page or user dashboard
+            header("Location: management.php");
             exit();
         } else {
-            $error = "Invalid password.";
+            $error = "Invalid email or password.";
         }
     } else {
-        $error = "No account found with that email address.";
+        $error = "No account found with that email.";
     }
 
+    // Close the statement and connection
     $stmt->close();
-    mysqli_close($conn);
+    $conn->close();
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">

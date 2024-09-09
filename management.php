@@ -1,18 +1,19 @@
 <?php
-// In user_dashboard.php
+// Start the session
 session_start();
 
 // Prevent caching
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 
-// Check if the user is logged in and has user privileges
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+// Check if the user is logged in
+if (!isset($_SESSION['email'])) {
+    // Redirect to the login page if not logged in
     header("Location: login.php");
     exit();
 }
+
+// Continue with the protected page content
 ?>
 
 <!DOCTYPE html>

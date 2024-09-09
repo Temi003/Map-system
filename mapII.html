@@ -9,36 +9,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; overflow: hidden; height: 86vh; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Map styling */
+        #map {
+            position: absolute;
+            top: 14vh; /* Leaves room for the header */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 14vh); /* Full screen height minus header height */
+        }
+
+        /* Marker label styling */
         .marker-label {
-            background-color: rgb(119, 119, 119);
-            color: black;
+            background-color: rgba(50, 50, 50, 0.8); /* Slightly transparent background for better readability */
+            color: white;
             padding: 4px 8px;
             border-radius: 3px;
             font-size: 14px;
             font-weight: bold;
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
-            white-space: nowrap; /* Prevent text from wrapping */
+            white-space: nowrap;
         }
+
+        /* Custom Mapbox marker icon */
         .marker-icon {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             background: url('https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png') no-repeat center center;
             background-size: contain;
         }
-        .mapbox-directions-origin-input {
-            pointer-events: none; /* Prevent interaction */
-            background-color: #f0f0f0; /* Light background to indicate it's disabled */
-            cursor: not-allowed; /* Show not-allowed cursor */
-}
 
+        /* Styling for the origin input (to look disabled) */
+        .mapbox-directions-origin-input {
+            pointer-events: none;
+            background-color: #ccc; /* Grey background to indicate it's disabled */
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .menu ul {
+                flex-direction: column;
+            }
+            
+            .menu ul li {
+                margin: 10px 0;
+            }
+
+            #map {
+                top: 14vh; /* Adjust map height for mobile header */
+                height: calc(100vh - 14vh);
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Header Section -->
     <div class="menu">
         <div class="logo">
-            <img src="images/ulk logo 2.png" alt="">
+            <img src="images/ulk logo 2.png" alt="ULK Logo">
             <h2>KIGALI INDEPENDENT UNIVERSITY (ULK)</h2>
         </div>
         <ul>
@@ -49,10 +86,10 @@
         </ul>
     </div>
 
-    <div class="map-container">
-        <div id="map"></div>
-    </div>
+    <!-- Map Container -->
+    <div id="map"></div>
 
+    <!-- Mapbox Scripts -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js'></script>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css' type='text/css'>
@@ -80,17 +117,18 @@ const ulkBounds = [
     [30.058, -1.918]  // Northeast corner of ULK boundary
 ];
 
-// Add directions control
 const directions = new MapboxDirections({
     accessToken: mapboxgl.accessToken,
     unit: 'metric',
     profile: 'mapbox/driving', // Adjust profile based on your preference
+    alternatives: false, // Ensure the shortest route is always selected
     controls: {
         inputs: true,  // Ensure inputs are enabled
         instructions: true,
         profileSwitcher: true
     }
 });
+
 
 // Add directions control to the map
 map.addControl(directions, 'top-left');
@@ -142,13 +180,26 @@ function successLocation(position) {
         originMarker.setLngLat(userCoordinates); // Update origin marker
         map.setCenter(userCoordinates); // Center the map on the device's location
         
-        // Disable origin input
-        const originInput = document.querySelector('.mapbox-directions-origin-input');
-        if (originInput) {
-            originInput.setAttribute('disabled', 'true');
-            originInput.setAttribute('placeholder', 'Origin: Your Location');
-            originInput.classList.add('mapbox-directions-origin-input');
-        }
+        // Disable origin input by overriding the default behavior
+directions.on('origin', event => {
+    // Prevent origin from being changed by user
+    const userCoordinates = directions.getOrigin().geometry.coordinates;
+    if (!isWithinUlk(userCoordinates)) {
+        directions.setOrigin(null); // Clear the origin if it's not within ULK
+    } else {
+        directions.setOrigin(userCoordinates); // Keep origin locked to user's location
+        originMarker.setLngLat(userCoordinates); // Update origin marker
+    }
+});
+
+// Disable the origin input field visually (if not already done)
+const originInput = document.querySelector('.mapbox-directions-origin-input');
+if (originInput) {
+    originInput.setAttribute('disabled', 'true');
+    originInput.setAttribute('placeholder', 'Origin: Your Location');
+    originInput.classList.add('mapbox-directions-origin-input');
+}
+
     } else {
         alert('You are not within the ULK campus.');
         setTimeout(() => {

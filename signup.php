@@ -12,24 +12,35 @@ if (isset($_POST['submit'])) {
     $rnumber = mysqli_real_escape_string($conn, $_POST['rollnumber']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $class = mysqli_real_escape_string($conn, $_POST['class']);
 
-    // SQL query to insert data into the 'users' table
-    $sql = "INSERT INTO users (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`) 
-            VALUES ('$fname', '$lname', '$dob', '$rnumber', '$email', '$password')";
+    // Check if email already exists
+    $checkEmailQuery = "SELECT * FROM users WHERE Email = '$email'";
+    $result = mysqli_query($conn, $checkEmailQuery);
 
-    // Execute the query
-    if (mysqli_query($conn, $sql)) {
-        $message = "New record created successfully.";
-        $message_class = 'success'; // Add success class
-        header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
+    if (mysqli_num_rows($result) > 0) {
+        // Email already exists
+        $message = "The email address is already in use. Please use a different email.";
+        $message_class = 'error'; // Add error class
     } else {
-        // Check for duplicate entry error
-        if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
-            $message = "Duplicate entry detected. Please use a different roll number.";
-            $message_class = 'error'; // Add error class
+        // SQL query to insert data into the 'users' table
+        $sql = "INSERT INTO users (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `class`) 
+                VALUES ('$fname', '$lname', '$dob', '$rnumber', '$email', '$password', '$class')";
+
+        // Execute the query
+        if (mysqli_query($conn, $sql)) {
+            $message = "New record created successfully.";
+            $message_class = 'success'; // Add success class
+            header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
         } else {
-            $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
-            $message_class = 'error'; // Add error class
+            // Check for duplicate entry error
+            if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
+                $message = "Duplicate entry detected. Please use a different roll number.";
+                $message_class = 'error'; // Add error class
+            } else {
+                $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
+                $message_class = 'error'; // Add error class
+            }
         }
     }
 }
@@ -37,6 +48,7 @@ if (isset($_POST['submit'])) {
 // Close the connection
 mysqli_close($conn);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -50,6 +62,11 @@ mysqli_close($conn);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Signup container specific styling */
+  .signup-container {
+    width: 700px; /* Width */
+    height: auto; /* Height relative to viewport height */
+  }
         .back-button {
             width: 50px;
             height: 50px;
@@ -123,6 +140,15 @@ mysqli_close($conn);
                     <input type="text" id="roll-number" name="rollnumber" placeholder="Enter your Roll Number" required>
                 </div>
             </div>
+            <div class="input-group">
+                    <label for="class">Class</label>
+                    <select id="class" name="class" required>
+                        <option value="" disabled selected>Select your class</option>
+                        <option value="Year 1">Year 1</option>
+                        <option value="Year 2">Year 2</option>
+                        <option value="Year 3">Year 3</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="Enter your Email" required>

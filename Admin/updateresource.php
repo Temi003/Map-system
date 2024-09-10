@@ -16,30 +16,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         if ($availability) {
             // Fetch waitlisted users for this resource
-            $stmt = $conn->prepare("SELECT email, `reserved time` FROM waitlist WHERE resource = ?");
+            $stmt = $conn->prepare("SELECT email, `Begin time`, `End time` FROM waitlist WHERE resource = ?");
             $stmt->bind_param("s", $resource);
             $stmt->execute();
             $result = $stmt->get_result();
 
             while ($row = $result->fetch_assoc()) {
                 $user_email = $row['email'];
-                $reserved_time = $row['reserved time'];
-                $booking_time = date("Y-m-d H:i:s"); // Set the current time for booking
+                $begin_time = $row['Begin time'];
+                $end_time = $row['End time'];
 
-                // Insert booking for each waitlisted user
-                $stmt = $conn->prepare("INSERT INTO bookings (resource, email, booking_time) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $resource, $user_email, $booking_time);
+                // Insert booking for each waitlisted user using their waitlisted time
+                $stmt = $conn->prepare("INSERT INTO bookings (resource, email, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssss", $resource, $user_email, $begintime, $endtime);
                 $stmt->execute();
 
                 // Remove from waitlist
-                $stmt = $conn->prepare("DELETE FROM waitlist WHERE email = ? AND resource = ? AND `reserved time` = ?");
-                $stmt->bind_param("sss", $user_email, $resource, $reserved_time);
+                $stmt = $conn->prepare("DELETE FROM waitlist WHERE email = ? AND resource = ? AND `Begin time` = ? AND `End time` = ?");
+                $stmt->bind_param("ssss", $user_email, $resource, $begin_time, $end_time);
                 $stmt->execute();
+
 
                 // Insert notification for each waitlisted user
                 $stmt = $conn->prepare("INSERT INTO notifications (user_email, message, timestamp) VALUES (?, ?, NOW())");
-                $message = "The resource '$resource' is now available and has been booked for you.";
-                $stmt->bind_param("ss", $user_email, $message);
+                $notification_message = "The resource '$resource' is now available and has been booked for you from $begin_time to $end_time.";
+                $stmt->bind_param("ss", $user_email, $notification_message);
                 $stmt->execute();
             }
 
@@ -62,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
+
 
 
 <!DOCTYPE html>

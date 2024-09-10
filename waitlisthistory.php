@@ -11,22 +11,49 @@ $message = "";
 $showPrintIcon = false; // Initialize flag
 
 // Check if user is logged in and email is available in the session
-if (!isset($_SESSION['user_email'])) {
+if (!isset($_SESSION['email'])) {
     die("User not logged in.");
 }
 
-$user_email = $_SESSION['user_email']; // Get logged-in user's email
+$user_email = $_SESSION['email']; // Get logged-in user's email
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['email'])) {
+    // Handle the delete booking action
+    if (isset($_POST['delete_booking'])) {
+        $booking_id = $_POST['booking_id'];
+        $email = $_POST['email'];
+
+        // Make sure the user is deleting their own booking
+        if ($email !== $user_email) {
+            $message = "You are not authorized to delete this booking.";
+        } else {
+            // Prepare and execute the delete query
+            $stmt = $conn->prepare("DELETE FROM waitlist WHERE id = ? AND email = ?");
+            if ($stmt === false) {
+                die("Error preparing statement: " . htmlspecialchars($conn->error));
+            }
+
+            $stmt->bind_param("is", $booking_id, $email);
+            if ($stmt->execute()) {
+                $message = "Booking deleted successfully.";
+            } else {
+                $message = "Error deleting booking: " . $stmt->error;
+            }
+
+            $stmt->close();
+        }
+    }
+
+    // Fetch waitlist history if the email is set
+    if (isset($_POST['email']) && !isset($_POST['delete_booking'])) {
         $email = $_POST['email'];
 
         // Validate the email address
         if ($email !== $user_email) {
             $message = "You are not authorized to check the waitlist history for this user.";
         } else {
-            // Prepare and execute the SQL statement
-            $stmt = $conn->prepare("SELECT resource, signup_time, `reserved time` FROM waitlist WHERE email = ?");
+            // Prepare and execute the SQL statement to fetch waitlist history
+            $stmt = $conn->prepare("SELECT id, resource, signup_time, `Begin time`, `End time` FROM waitlist WHERE email = ?");
             if ($stmt === false) {
                 die("Error preparing statement: " . htmlspecialchars($conn->error));
             }
@@ -41,13 +68,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <tr>
                             <th>Resource</th>
                             <th>Signup Time</th>
-                            <th>Reserved Time</th>
+                            <th>Begin Time</th>
+                            <th>End Time</th>
+                            <th>Action</th>
                         </tr>";
                 while ($row = $result->fetch_assoc()) {
                     $table_html .= "<tr>
                             <td>" . htmlspecialchars($row['resource']) . "</td>
                             <td>" . htmlspecialchars($row['signup_time']) . "</td>
-                            <td>" . htmlspecialchars($row['reserved time']) . "</td>
+                            <td>" . htmlspecialchars($row['Begin time']) . "</td>
+                            <td>" . htmlspecialchars($row['End time']) . "</td>
+                            <td>
+                                <form action='waitlisthistory.php' method='post' style='display: inline-block; width: 205px;' class='action'>
+                                    <input type='hidden' name='booking_id' value='" . htmlspecialchars($row['id']) . "'>
+                                    <input type='hidden' name='email' value='" . htmlspecialchars($email) . "'>
+                                    <input type='submit' name='delete_booking' value='Delete' class='delete' onclick='return confirmDelete();'>
+                                </form>
+                            </td>
                           </tr>";
                 }
                 $table_html .= "</table>";
@@ -56,13 +93,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             $stmt->close();
-            $conn->close();
         }
-    } else {
-        $message = "Email field is missing.";
     }
+
+    $conn->close(); // Close the database connection
 }
 ?>
+
+
 
 <head>
     <meta charset="UTF-8">
@@ -329,6 +367,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             line-height: 1.5; /* Improve readability */
             text-align: center; /* Center align text */
         }
+        /* Align buttons beside each other in the form */
+form .button-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between buttons */
+}
+/* Delete button styling */
+form input[type="submit"].delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    transition: 1s;
+    border-radius: 5px;
+}
+form input[type="submit"].action{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: 1s;
+}
+
+form input[type="submit"].delete:hover {
+    background-color: #c82333;
+}
+form input[type="submit"].action:hover{
+    background-color: #0056b3;
+}
+.action {
+    box-shadow: none;
+    width: 100%;
+    color: none;
+}
+.bg-primary{
+            border-radius: 50%;
+            
+        }
+
 
     </style>
 </head>
@@ -438,6 +516,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     }
 });
+function confirmDelete() {
+    return confirm('Are you sure you want to delete this booking?');
+}
 
     </script>
 </body>

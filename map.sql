@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2024 at 09:50 PM
+-- Generation Time: Sep 10, 2024 at 11:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -31,18 +31,20 @@ CREATE TABLE `bookings` (
   `id` int(11) NOT NULL,
   `resource` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `booking_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `Begin time` datetime DEFAULT NULL,
+  `End time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `resource`, `email`, `booking_time`) VALUES
-(3, 'Room 305 4th floor', 'temidudu2003@gmail.com', '2024-09-07 06:46:00'),
-(4, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-08 16:30:07'),
-(5, 'Lab 2', 'agbelusitomisin@gmail.com', '2024-09-08 16:31:50'),
-(6, 'Lab 2', 'temidudu2003@gmail.com', '2024-09-08 16:31:50');
+INSERT INTO `bookings` (`id`, `resource`, `email`, `Begin time`, `End time`) VALUES
+(33, 'Room 307 3rd floor', 'temidudu2003@gmail.com', NULL, NULL),
+(34, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL),
+(35, 'Lab 2', 'agbelusitomisi@gmail.com', NULL, NULL),
+(36, 'Lab 2', 'temidudu2003@gmail.com', NULL, NULL),
+(37, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-10 11:00:00', '2024-09-10 11:01:00');
 
 -- --------------------------------------------------------
 
@@ -60,6 +62,13 @@ CREATE TABLE `classes` (
   `Start Time` time NOT NULL,
   `End Time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `classes`
+--
+
+INSERT INTO `classes` (`ID`, `Course Name`, `Lecturer Name`, `Class Year`, `Added At`, `Resource`, `Start Time`, `End Time`) VALUES
+(1, 'Networking III', 'Dr Musabe', 'Year 2 CS', '2024-09-10 15:31:26', 'Room 305 4th floor', '05:31:00', '17:31:00');
 
 -- --------------------------------------------------------
 
@@ -123,7 +132,11 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_email`, `message`, `timestamp`) VALUES
-(4, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you.', '2024-09-08 16:31:50');
+(24, 'temidudu2003@gmail.com', 'The resource \'Room 307 3rd floor\' is now available and has been booked for you from 2024-09-10 10:46:00 to 2024-09-10 10:48:00.', '2024-09-10 20:47:07'),
+(25, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-10 20:55:09'),
+(26, 'agbelusitomisi@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 06:53:00 to 2024-09-10 06:57:00.', '2024-09-10 20:55:09'),
+(27, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 10:51:00 to 2024-09-10 10:54:00.', '2024-09-10 20:55:09'),
+(28, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-10 11:00.', '2024-09-10 21:00:11');
 
 -- --------------------------------------------------------
 
@@ -156,6 +169,16 @@ CREATE TABLE `support tickets` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `support tickets`
+--
+
+INSERT INTO `support tickets` (`id`, `email`, `subject`, `message`, `status`, `created_at`) VALUES
+(1, 'agbelusitomisin@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 19:42:56'),
+(2, 'temidudu2003@gmail.com', 'nn', 'm', 'Resolved', '2024-09-10 19:43:02'),
+(3, 'temidudu2003@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 19:44:49'),
+(4, 'temidudu2003@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 20:13:59');
+
 -- --------------------------------------------------------
 
 --
@@ -165,21 +188,22 @@ CREATE TABLE `support tickets` (
 CREATE TABLE `users` (
   `First Name` varchar(30) NOT NULL,
   `Last Name` varchar(30) NOT NULL,
+  `Email` varchar(30) NOT NULL,
   `DOB` date NOT NULL,
   `Roll Number` int(10) NOT NULL,
-  `Email` varchar(30) NOT NULL,
-  `Password` varchar(30) NOT NULL,
-  `role` varchar(50) NOT NULL DEFAULT 'user'
+  `class` varchar(255) NOT NULL,
+  `role` varchar(50) NOT NULL DEFAULT '''user''',
+  `Password` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `role`) VALUES
-('tomisin', 'Agbelusi', '2024-09-28', 23, 'agbelusitomisin@gmail.com', '0000', 'user'),
-('Tomisin', 'Agbelusi', '2005-12-24', 202111067, 'agbelusitomisin@gmail.com', '0000', 'user'),
-('Temidayo', 'Agbelusi', '2003-01-22', 202111068, 'temidudu2003@gmail.com', '0000', 'user');
+INSERT INTO `users` (`First Name`, `Last Name`, `Email`, `DOB`, `Roll Number`, `class`, `role`, `Password`) VALUES
+('juwon', 'Agbelusi', 'agbelusitomisin@gmail.com', '2024-09-20', 77, 'Year 3', '\'user\'', '0000'),
+('Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-10-05', 88, 'Year 3', '\'user\'', '0000'),
+('tomisin', 'Agbelusi', 'agbelusitomisi@gmail.com', '2024-09-13', 20192939, 'Year 2', '\'user\'', '1234');
 
 -- --------------------------------------------------------
 
@@ -190,10 +214,19 @@ INSERT INTO `users` (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `
 CREATE TABLE `waitlist` (
   `id` int(11) NOT NULL,
   `resource` varchar(255) NOT NULL,
-  `reserved time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `email` varchar(255) NOT NULL,
-  `signup_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `signup_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `Begin time` datetime DEFAULT NULL,
+  `End time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `waitlist`
+--
+
+INSERT INTO `waitlist` (`id`, `resource`, `email`, `signup_time`, `Begin time`, `End time`) VALUES
+(6, 'Lab 2', 'agbelusitomisin@gmail.com', '2024-09-09 17:20:42', NULL, NULL),
+(7, 'Room 305 4th floor', 'agbelusitomisi@gmail.com', '2024-09-09 20:22:56', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -257,8 +290,7 @@ ALTER TABLE `users`
 -- Indexes for table `waitlist`
 --
 ALTER TABLE `waitlist`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_resource_time` (`email`,`resource`,`reserved time`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -268,13 +300,13 @@ ALTER TABLE `waitlist`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `contact us`
@@ -292,7 +324,7 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `resources`
@@ -304,7 +336,7 @@ ALTER TABLE `resources`
 -- AUTO_INCREMENT for table `support tickets`
 --
 ALTER TABLE `support tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -316,7 +348,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `waitlist`
 --
 ALTER TABLE `waitlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

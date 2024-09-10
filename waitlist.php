@@ -1,4 +1,6 @@
 <?php
+
+session_start();
 // Include the database connection
 include 'connection.php';
 
@@ -10,38 +12,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
     $resource = $_POST['resource'];
     $email = $_POST['email'];
-    $time = $_POST['time'];
+    $begintime = $_POST['begintime'];
+    $endtime = $_POST['endtime'];
 
     // Check if the email of the current user matches the email in the form
-    session_start();
-    $current_user_email = $_SESSION['user_email']; // Assuming the user's email is stored in session
+   
+    $current_user_email = $_SESSION['email']; // Assuming the user's email is stored in session
 
     if ($email !== $current_user_email) {
         // User is trying to waitlist for someone else
         $error_message = "You can only waitlist for yourself.";
     } else {
-        // Check if the user is already on the waitlist for the same resource at the same time
-        $stmt = $conn->prepare("SELECT * FROM waitlist WHERE email = ? AND resource = ? AND `reserved time` = ?");
-        $stmt->bind_param("sss", $email, $resource, $time);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Check if the resource is already booked for the selected time
+$sql = "SELECT * FROM bookings WHERE resource = ? AND `Begin time` = ? AND `End time` = ?";
+$stmt = $conn->prepare($sql);
 
-        if ($result->num_rows > 0) {
-            $error_message = "You are already on the waitlist for this resource at this time.";
-        } else {
-            // Prepare and bind
-            $stmt = $conn->prepare("INSERT INTO waitlist (resource, email, `reserved time`) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $resource, $email, $time);
+if ($stmt === false) {
+    // Print error if the prepare statement fails
+    die('Error in SQL: ' . $conn->error);
+}
 
-            // Execute the statement and check for success
-            if ($stmt->execute()) {
-                $success_message = "You have been added to the waitlist.";
+// If prepare() succeeds, bind parameters
+$stmt->bind_param("sss", $resource, $begintime, $endtime);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $error_message = "This resource has already been booked for the selected time, kindly select another time.";
+}else {
+            // Check if the user is already on the waitlist for the same resource at the same time
+$stmt = $conn->prepare("SELECT * FROM waitlist WHERE email = ? AND resource = ? AND `Begin time` = ? AND `End time` = ?");
+if ($stmt === false) {
+    die('Prepare failed: ' . $conn->error);
+}
+
+$stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
+$stmt->execute();
+$result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $error_message = "You are already on the waitlist for this resource at this time.";
             } else {
-                $error_message = "Error: " . $stmt->error;
-            }
+                // Prepare and bind
+                $stmt = $conn->prepare("INSERT INTO waitlist (resource, email, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssss", $resource, $email, $begintime, $endtime);
 
-            // Close statement
-            $stmt->close();
+                // Execute the statement and check for success
+                if ($stmt->execute()) {
+                    $success_message = "You have been added to the waitlist.";
+                } else {
+                    $error_message = "Error: " . $stmt->error;
+                }
+
+                // Close statement
+                $stmt->close();
+            }
         }
     }
 
@@ -57,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : '';
 $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -245,6 +271,10 @@ $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
         color: #721c24; /* Dark red text for error */
         border: 1px solid #f5c6cb; /* Red border for error */
 }
+.bg-primary{
+            border-radius: 50%;
+            
+        }
 
     </style>
 </head>
@@ -321,8 +351,10 @@ $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
                 </select><br>
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required><br>
-                <label for="time">Reserved Time:</label>
-                <input type="datetime-local" id="time" name="time" required><br><br>
+                <label for="time">Begin Time:</label>
+                <input type="datetime-local" id="begintime" name="begintime" required><br>
+                <label for="time">End Time:</label>
+                <input type="datetime-local" id="endtime" name="endtime" required><br><br>
                 <input type="submit" value="Join Waitlist">
             </form>
         </div>

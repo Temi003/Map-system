@@ -8,32 +8,45 @@ include 'connection.php';
 $message = "";
 $alert_class = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize input
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $subject = htmlspecialchars($_POST['subject'], ENT_QUOTES, 'UTF-8');
-    $message = htmlspecialchars($_POST['message'], ENT_QUOTES, 'UTF-8');
+// Check if the user is logged in
+if (!isset($_SESSION['email'])) {
+    $message = "You must be logged in to submit a support ticket.";
+    $alert_class = "alert-danger";
+} else {
+    // Get the logged-in user's email from the session
+    $logged_in_email = $_SESSION['email'];
 
-    // Validate email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Invalid email format.";
-        $alert_class = "alert-danger";
-    } else {
-        // Prepare and execute SQL statement
-        $stmt = $conn->prepare("INSERT INTO `support tickets` (email, subject, message, status) VALUES (?, ?, ?, 'Open')");
-        $stmt->bind_param("sss", $email, $subject, $message);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Sanitize input
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $subject = htmlspecialchars($_POST['subject'], ENT_QUOTES, 'UTF-8');
+        $message_content = htmlspecialchars($_POST['message'], ENT_QUOTES, 'UTF-8');
 
-        if ($stmt->execute()) {
-            $message = "Your support ticket has been submitted successfully.";
-            $alert_class = "alert-success";
-        } else {
-            $message = "Error: " . $stmt->error;
+        // Validate email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $message = "Invalid email format.";
             $alert_class = "alert-danger";
-        }
+        } elseif ($email !== $logged_in_email) {
+            // Ensure the submitted email matches the logged-in user's email
+            $message = "You cannot submit a support ticket for another user.";
+            $alert_class = "alert-danger";
+        } else {
+            // Prepare and execute SQL statement
+            $stmt = $conn->prepare("INSERT INTO `support tickets` (email, subject, message, status) VALUES (?, ?, ?, 'Open')");
+            $stmt->bind_param("sss", $email, $subject, $message_content);
 
-        // Close statement and connection
-        $stmt->close();
-        $conn->close();
+            if ($stmt->execute()) {
+                $message = "Your support ticket has been submitted successfully.";
+                $alert_class = "alert-success";
+            } else {
+                $message = "Error: " . $stmt->error;
+                $alert_class = "alert-danger";
+            }
+
+            // Close statement and connection
+            $stmt->close();
+            $conn->close();
+        }
     }
 }
 ?>

@@ -3,12 +3,12 @@ session_start();
 include 'connection.php'; // Include the database connection
 
 // Ensure the user is logged in and their email is stored in the session
-if (!isset($_SESSION['user_email'])) {
+if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
 
-$current_user_email = $_SESSION['user_email'];
+$current_user_email = $_SESSION['email'];
 
 // Initialize variables for messages and table content
 $message = "";
@@ -17,42 +17,137 @@ $showPrintIcon = false;
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    if (isset($_POST['mark_done'])) {
+        $booking_id = $_POST['booking_id'];
+        $done = 1; // Assuming you want to mark as done
 
-    // Verify if the email matches the current user's email
-    if ($email !== $current_user_email) {
-        $message = "<div class='error-box'>You cannot view the booking history for another user.</div>";
-    } else {
-        // Fetch booking history for the current user
-        $stmt = $conn->prepare("SELECT resource, booking_time FROM bookings WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Update the booking status to mark it as done
+        if ($stmt = $conn->prepare("UPDATE bookings SET done = ? WHERE id = ?")) {
+            $stmt->bind_param("ii", $done, $booking_id);
+            if ($stmt->execute()) {
+                $message = "<div class='info-box'>Booking status updated successfully.</div>";
 
-        if ($result->num_rows > 0) {
-            $showPrintIcon = true; // Set flag to show print icon
-            $tableContent .= "<table border='1'>
-                                <tr>
-                                    <th>Resource</th>
-                                    <th>Booking Time</th>
-                                </tr>";
-            while ($row = $result->fetch_assoc()) {
-                $tableContent .= "<tr>
-                                    <td>" . htmlspecialchars($row['resource']) . "</td>
-                                    <td>" . htmlspecialchars($row['booking_time']) . "</td>
-                                  </tr>";
+                // Check if this was the last person using the resource
+                $stmt_check_resource = $conn->prepare("SELECT resource FROM bookings WHERE id = ?");
+                $stmt_check_resource->bind_param("i", $booking_id);
+                $stmt_check_resource->execute();
+                $result_resource = $stmt_check_resource->get_result();
+                if ($result_resource->num_rows > 0) {
+                    $row_resource = $result_resource->fetch_assoc();
+                    $resource = $row_resource['resource'];
+
+                    // Check if any other users are still using the same resource
+                    $stmt_check_users = $conn->prepare("SELECT COUNT(*) AS users_using FROM bookings WHERE resource = ? AND done = 0");
+                    $stmt_check_users->bind_param("s", $resource);
+                    $stmt_check_users->execute();
+                    $result_users = $stmt_check_users->get_result();
+                    $row_users = $result_users->fetch_assoc();
+
+                    if ($row_users['users_using'] == 0) {
+                        // Find the next waitlisted user for this resource
+                        $stmt_next_user = $conn->prepare("SELECT email FROM waitlist WHERE resource = ? ORDER BY wait_time ASC LIMIT 1");
+                        $stmt_next_user->bind_param("s", $resource);
+                        $stmt_next_user->execute();
+                        $result_next_user = $stmt_next_user->get_result();
+
+                        if ($result_next_user->num_rows > 0) {
+                            $row_next_user = $result_next_user->fetch_assoc();
+                            $next_user_email = $row_next_user['email'];
+                            // Process the next waitlisted user (e.g., send email or create booking)
+                        }
+                    }
+                    $stmt_check_users->close();
+                }
+                $stmt_check_resource->close();
+            } else {
+                $message = "<div class='error-box'>Failed to update booking status.</div>";
             }
-            $tableContent .= "</table>";
+            $stmt->close();
         } else {
-            $message = "<div class='info-box'>No bookings found for this user.</div>";
+            $message = "<div class='error-box'>Failed to prepare statement for updating booking status: " . $conn->error . "</div>";
         }
+    } elseif (isset($_POST['delete_booking'])) {
+        $booking_id = $_POST['booking_id'];
 
-        $stmt->close();
+        // Delete the booking
+        if ($stmt = $conn->prepare("DELETE FROM bookings WHERE id = ?")) {
+            $stmt->bind_param("i", $booking_id);
+            if ($stmt->execute()) {
+                $message = "<div class='info-box'>Booking deleted successfully.</div>";
+            } else {
+                $message = "<div class='error-box'>Failed to delete booking.</div>";
+            }
+            $stmt->close();
+        } else {
+            $message = "<div class='error-box'>Failed to prepare statement for deleting booking: " . $conn->error . "</div>";
+        }
+    } elseif (isset($_POST['email'])) {
+        $email = $_POST['email'];
+
+        // Verify if the email matches the current user's email
+        if ($email !== $current_user_email) {
+            $message = "<div class='error-box'>You cannot view the booking history for another user.</div>";
+        } else {
+            // Fetch booking history for the current user
+            if ($stmt = $conn->prepare("SELECT id, resource, `Begin time`, `End time` FROM bookings WHERE email = ?")) {
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($result->num_rows > 0) {
+                    $showPrintIcon = true; // Set flag to show print icon
+                    $tableContent .= "<table border='1'>
+                                        <tr>
+                                            <th>Resource</th>
+                                            <th>Begin Time</th>
+                                            <th>End Time</th>
+                                            <th>Actions</th>
+                                        </tr>";
+                    while ($row = $result->fetch_assoc()) {
+                        $tableContent .= "<tr>
+                                            <td>" . htmlspecialchars($row['resource']) . "</td>
+                                            <td>" . htmlspecialchars($row['Begin time']) . "</td>
+                                            <td>" . htmlspecialchars($row['End time']) . "</td>
+                                            <td>
+                                                <form action='bookinghistory.php' method='post' style='display: inline-block; width: 205px;' class='action'>
+                                                    <input type='hidden' name='booking_id' value='" . htmlspecialchars($row['id']) . "'>
+                                                    <input type='submit' name='delete_booking' value='Delete' class='delete' onclick='return confirmDelete();'>
+                                                </form>
+                                            </td>
+                                          </tr>";
+                    }
+                    $tableContent .= "</table>";
+                } else {
+                    $message = "<div class='info-box'>No bookings found for this user.</div>";
+                }
+
+                $stmt->close();
+            } else {
+                $message = "<div class='error-box'>Failed to prepare statement for fetching bookings: " . $conn->error . "</div>";
+            }
+        }
     }
 
     $conn->close();
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking History</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this booking?');
+        }
+    </script>
+</head>
+<body>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -313,7 +408,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 width: 100%; /* Ensure the table takes full width */
             }
         }
+/* Align buttons beside each other in the form */
+form .button-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between buttons */
+}
+/* Delete button styling */
+form input[type="submit"].delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    transition: 1s;
+    border-radius: 5px;
+}
+form input[type="submit"].action{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: 1s;
+}
+
+form input[type="submit"].delete:hover {
+    background-color: #c82333;
+}
+form input[type="submit"].action:hover{
+    background-color: #0056b3;
+}
+.action {
+    box-shadow: none;
+    width: 100%;
+    color: none;
+}
+.bg-primary{
+            border-radius: 50%;
+            
+        }
+
     </style>
+    
+    <!-- JavaScript to handle the buttons functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var printButton = document.getElementById('printButton');
+            var downloadButton = document.getElementById('downloadButton');
+
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    window.print();
+                });
+            }
+
+            if (downloadButton) {
+                downloadButton.addEventListener('click', function () {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Capture the table HTML and download
+                    html2canvas(document.querySelector('.table-container')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 10, 20, 180, 0);
+                        doc.save('booking-history.pdf');
+                    }).catch(function (error) {
+                        alert('An error occurred while downloading. Please try again.');
+                        console.error('Error capturing the table:', error);
+                    });
+                });
+            }
+        });
+
+        function confirmDelete() {
+    return confirm('Are you sure you want to delete this booking?');
+}
+
+    </script>
 </head>
 <body>
     <div class="menu">
@@ -391,36 +562,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } ?>
         </div>
     </div>
-
-    <!-- JavaScript to handle the buttons functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var printButton = document.getElementById('printButton');
-            var downloadButton = document.getElementById('downloadButton');
-
-            if (printButton) {
-                printButton.addEventListener('click', function () {
-                    window.print();
-                });
-            }
-
-            if (downloadButton) {
-                downloadButton.addEventListener('click', function () {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-
-                    // Capture the table HTML and download
-                    html2canvas(document.querySelector('.table-container')).then(canvas => {
-                        const imgData = canvas.toDataURL('image/png');
-                        doc.addImage(imgData, 'PNG', 10, 20, 180, 0);
-                        doc.save('booking-history.pdf');
-                    }).catch(function (error) {
-                        alert('An error occurred while downloading. Please try again.');
-                        console.error('Error capturing the table:', error);
-                    });
-                });
-            }
-        });
-    </script>
 </body>
 </html>

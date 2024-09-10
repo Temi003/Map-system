@@ -237,7 +237,7 @@
     <div class="dashboard-content">
         <br>
         <br>
-        <h2 style="margin: 5px;">Avalibility Of Resources</h2>
+        <h2 style="margin: 5px;">Avalibility Of Classes</h2>
         <table class="table table-striped">
             <thead>
                 <tr>

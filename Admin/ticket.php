@@ -19,7 +19,7 @@ if (isset($_POST['resolve_ticket'])) {
                 $id = intval($id); // Sanitize the input
                 $sql = "UPDATE `support tickets` SET status='resolved' WHERE id=$id";
                 if ($conn->query($sql) === TRUE) {
-                    $message = "Ticket $id resolved successfully!";
+                    $message = "Ticket resolved successfully!";
                     $type = 'success';
                 } else {
                     $message = "Error resolving ticket $id: " . $conn->error;

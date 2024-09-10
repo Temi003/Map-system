@@ -3,14 +3,14 @@ session_start();
 include 'connection.php';
 
 // Check if user email is set
-if (!isset($_SESSION['user_email'])) {
+if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
 
-$user_email = $_SESSION['user_email'];
+$user_email = $_SESSION['email'];
 
-// Function to fetch notifications for a specific user
+// Function to fetch notifications and count for a specific user
 function getNotificationsForUser($user_email) {
     global $conn;
 
@@ -32,14 +32,19 @@ function getNotificationsForUser($user_email) {
     $result = $stmt->get_result();
 
     $notifications = [];
+    $notificationCount = 0;
 
     while ($row = $result->fetch_assoc()) {
         $notifications[] = $row;
+        $notificationCount++;
     }
 
     $stmt->close();
-    return $notifications;
+    return [$notifications, $notificationCount];
 }
+
+// Fetch notifications for the current user and store them in $notifications and $notificationCount
+list($notifications, $notificationCount) = getNotificationsForUser($user_email);
 
 // Handle form submission to clear notifications
 if (isset($_POST['clear_notifications']) && isset($_POST['confirm_clear']) && $_POST['confirm_clear'] == 'Yes') {
@@ -62,9 +67,6 @@ function clearNotifications($user_email) {
     $stmt->execute();
     $stmt->close();
 }
-
-// Fetch notifications for the current user and store them in $notifications
-$notifications = getNotificationsForUser($user_email);
 ?>
 
 <!DOCTYPE html>
@@ -234,6 +236,10 @@ $notifications = getNotificationsForUser($user_email);
             font-size: 15px;
             padding: 10px 10px;
         }
+        .bg-primary{
+            border-radius: 50%;
+
+        }
 
     </style>
     <script>
@@ -304,11 +310,15 @@ $notifications = getNotificationsForUser($user_email);
         </div>
 
         <?php
-        if (!empty($notifications)) {
+        if (!empty($notifications) && is_array($notifications)) {
             foreach ($notifications as $notification) {
+                // Check if keys exist before accessing them
+                $message = isset($notification['message']) ? htmlspecialchars($notification['message']) : 'No message';
+                $timestamp = isset($notification['timestamp']) ? htmlspecialchars($notification['timestamp']) : 'No timestamp';
+
                 echo '<div class="notification">';
-                echo '<p>' . htmlspecialchars($notification['message']) . '</p>';
-                echo '<small>' . htmlspecialchars($notification['timestamp']) . '</small>';
+                echo '<p>' . $message . '</p>';
+                echo '<small>' . $timestamp . '</small>';
                 echo '</div>';
             }
         } else {

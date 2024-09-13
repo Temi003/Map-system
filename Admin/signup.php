@@ -93,7 +93,7 @@ mysqli_close($conn);
     <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
     </a>
     <div class="signup-container">
-        <h2>Sign Up</h2>
+        <h2>Admin Sign Up</h2>
 
         <div class="message">
     <?php if ($message != ''): ?>
@@ -128,14 +128,10 @@ mysqli_close($conn);
                     <input type="date" id="dob" name="dob" required>
                 </div>
                 <div class="input-group">
-                    <label for="roll-number">Roll Number</label>
-                    <input type="text" id="roll-number" name="rollnumber" placeholder="Enter your Roll Number" required>
-                </div>
-            </div>
-                <div class="input-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                 </div>
+            </div>
                 <div class="input-group">
         <label for="role">Role</label>
         <select id="role" name="role" required>

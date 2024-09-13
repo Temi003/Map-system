@@ -19,8 +19,42 @@ if (isset($_POST['resolve_ticket'])) {
                 $id = intval($id); // Sanitize the input
                 $sql = "UPDATE `support tickets` SET status='resolved' WHERE id=$id";
                 if ($conn->query($sql) === TRUE) {
+                    // Ticket resolved successfully
                     $message = "Ticket resolved successfully!";
                     $type = 'success';
+
+                    // Fetch ticket details for notifications
+                    $result = $conn->query("SELECT email FROM `support tickets` WHERE id=$id");
+                    if ($result) {
+                        if ($row = $result->fetch_assoc()) {
+                            $email = $row['email'];
+
+                            // Prepare notification message
+                            $notificationMessage = "Your ticket has been resolved.";
+
+                            // Prepare the statement
+                            $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+                            if ($stmt === false) {
+                                die("Error preparing statement: " . $conn->error);
+                            }
+
+                            // Bind parameters
+                            $stmt->bind_param("ss", $email, $notificationMessage);
+                            if ($stmt->execute()) {
+                                $stmt->close();
+                            } else {
+                                $message = "Error: Could not insert into notifications.";
+                                $type = 'error';
+                                echo "Error executing statement: " . $stmt->error;
+                            }
+                        } else {
+                            $message = "Error fetching ticket details.";
+                            $type = 'error';
+                        }
+                    } else {
+                        $message = "Error fetching ticket details: " . $conn->error;
+                        $type = 'error';
+                    }
                 } else {
                     $message = "Error resolving ticket $id: " . $conn->error;
                     $type = 'error';
@@ -41,6 +75,8 @@ $result = $conn->query("SELECT id, message, subject, email, status FROM `support
 
 // HTML starts here
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

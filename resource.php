@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Classes</title>
+    <title>Add Class</title>
     <link rel="icon" href="Images/ULK logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
@@ -122,66 +122,69 @@
             width: 100%;
             margin-bottom: 20px;
         }
+
         th, td {
             text-align: left;
             padding: 8px;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
 
         /* General button styling */
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem; /* Button size */
-    font-size: 0.875rem;
-    font-weight: 400;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid transparent;
-    text-decoration: none; /* Removes underline from links */
-    color: #fff; /* Text color */
-    margin: 0; /* Ensures no extra margin */
-    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
-    width: 100%; /* Forces the button to take up full width of the container */
-    transition: 0.8s;
-}
-/* Blue button style */
-.btn-blue {
-    background-color: #007bff; /* Blue background color */
-    border-color: #007bff; /* Blue border color */
-    margin-bottom: 2px;
-}
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem; /* Button size */
+            font-size: 0.875rem;
+            font-weight: 400;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-decoration: none; /* Removes underline from links */
+            color: #fff; /* Text color */
+            margin: 0; /* Ensures no extra margin */
+            box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+            width: 100%; /* Forces the button to take up full width of the container */
+            transition: 0.8s;
+        }
 
-/* Red button style */
-.btn-red {
-    background-color: #dc3545; /* Red background color */
-    border-color: #dc3545; /* Red border color */
-    margin-top: 2px;
-}
+        /* Blue button style */
+        .btn-blue {
+            background-color: #007bff; /* Blue background color */
+            border-color: #007bff; /* Blue border color */
+            margin-bottom: 2px;
+        }
 
-/* Hover States */
-.btn-blue:hover {
-    background-color: #0056b3; /* Lighter blue on hover */
-    border-color: #0056b3; /* Lighter blue border on hover */
-}
+        /* Red button style */
+        .btn-red {
+            background-color: #dc3545; /* Red background color */
+            border-color: #dc3545; /* Red border color */
+            margin-top: 2px;
+        }
 
-.btn-red:hover {
-    background-color: #c82333; /* Lighter red on hover */
-    border-color: #c82333; /* Lighter red border on hover */
-}
+        /* Hover States */
+        .btn-blue:hover {
+            background-color: #0056b3; /* Lighter blue on hover */
+            border-color: #0056b3; /* Lighter blue border on hover */
+        }
 
-/* Focus and Active States */
-.btn:focus, .btn:active {
-    outline: none; /* Remove default focus outline */
-}
+        .btn-red:hover {
+            background-color: #c82333; /* Lighter red on hover */
+            border-color: #c82333; /* Lighter red border on hover */
+        }
 
-/* Ensure no underline on hover */
-.btn-blue:hover, .btn-red:hover {
-    text-decoration: none; /* Ensure no underline on hover */
-}
+        /* Focus and Active States */
+        .btn:focus, .btn:active {
+            outline: none; /* Remove default focus outline */
+        }
+
+        /* Ensure no underline on hover */
+        .btn-blue:hover, .btn-red:hover {
+            text-decoration: none; /* Ensure no underline on hover */
+        }
     </style>
 </head>
 <body>
@@ -208,7 +211,7 @@
     <div id="sidebar">
         <h2>User Dashboard</h2>
         <ul class="nav flex-column">
-        <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="management.php">Home</a>
             </li>
             <li class="nav-item">
@@ -234,10 +237,9 @@
             </li>
         </ul>
     </div>
+
     <div class="dashboard-content">
-        <br>
-        <br>
-        <h2 style="margin: 5px;">Avalibility Of Classes</h2>
+        <h2>Recent Activities</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -251,16 +253,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
                 <?php
                 include 'connection.php'; // Include the database connection
-
-                // session_start();
-                // // Assuming you have verified user credentials
-                // $_SESSION['user_email'] = $user_email; // Set user email in session
-                // header("Location: resource.php"); // Redirect to the user dashboard
-                // exit();
-
 
                 // Fetch recent activities from the database
                 $sql = "SELECT * FROM classes ORDER BY `Added At` DESC";
@@ -271,7 +265,7 @@
                 }
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
-                        echo "
+                        echo "<tr>
                                 <td>{$row['Course Name']}</td>
                                 <td>{$row['Lecturer Name']}</td>
                                 <td>{$row['Class Year']}</td>
@@ -279,7 +273,7 @@
                                 <td>{$row['Resource']}</td>
                                 <td>{$row['Start Time']}</td>
                                 <td>{$row['End Time']}</td>
-                            ";
+                            </tr>";
                     }
                 } else {
                     echo "<tr><td colspan='7'>No recent activities</td></tr>"; 
@@ -289,5 +283,7 @@
             </tbody>
         </table>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

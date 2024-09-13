@@ -101,7 +101,7 @@ mysqli_close($conn);
     <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
     </a>
     <div class="signup-container">
-        <h2>Sign Up</h2>
+        <h2>User Sign Up</h2>
 
         <div class="message">
     <?php if ($message != ''): ?>

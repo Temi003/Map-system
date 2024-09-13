@@ -188,7 +188,7 @@ CREATE TABLE `school` (
 
 INSERT INTO `school` (`Roll number`, `First Name`, `Last Name`, `Class`, `Email`) VALUES
 (202111068, 'Temidayo', 'Agbelusi', 'year 3', 'temidudu2003@gmail.com'),
-(202111069, 'Tomisin', 'Agbelusi', 'Year 3', 'Agbelusitomisin@gmail.com\r\n');
+(202111069, 'Tomisin', 'Agbelusi', 'Year 3', 'agbelusitomisin@gmail.com\r\n');
 
 -- --------------------------------------------------------
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2024 at 11:38 PM
+-- Generation Time: Sep 13, 2024 at 10:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -40,11 +40,13 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `resource`, `email`, `Begin time`, `End time`) VALUES
-(33, 'Room 307 3rd floor', 'temidudu2003@gmail.com', NULL, NULL),
 (34, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL),
 (35, 'Lab 2', 'agbelusitomisi@gmail.com', NULL, NULL),
-(36, 'Lab 2', 'temidudu2003@gmail.com', NULL, NULL),
-(37, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-10 11:00:00', '2024-09-10 11:01:00');
+(37, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-10 11:00:00', '2024-09-10 11:01:00'),
+(38, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL),
+(41, 'Room 305 4th floor', 'agbelusitomisi@gmail.com', NULL, NULL),
+(42, 'Room 307 3rd floor', 'temidudu2003@gmail.com', NULL, NULL),
+(43, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -68,7 +70,7 @@ CREATE TABLE `classes` (
 --
 
 INSERT INTO `classes` (`ID`, `Course Name`, `Lecturer Name`, `Class Year`, `Added At`, `Resource`, `Start Time`, `End Time`) VALUES
-(1, 'Networking III', 'Dr Musabe', 'Year 2 CS', '2024-09-10 15:31:26', 'Room 305 4th floor', '05:31:00', '17:31:00');
+(3, 'python', 'eric', 'Year 2 software', '2024-09-12 09:53:29', '3rd floor room 365', '08:30:00', '14:30:00');
 
 -- --------------------------------------------------------
 
@@ -112,7 +114,8 @@ CREATE TABLE `employees` (
 
 INSERT INTO `employees` (`Employee_ID`, `First Name`, `Last Name`, `Email`, `Password`, `Role`) VALUES
 (1, 'Temidayo', 'Agbelusi', 'agbelusitemidayo@gmail.com', '12345', '0'),
-(2, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '0000', 'admin');
+(2, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '00000', 'admin'),
+(3, 'yemi', 'Agbelusi', 'temi20@gmail.com', '0000', 'admin');
 
 -- --------------------------------------------------------
 
@@ -136,7 +139,14 @@ INSERT INTO `notifications` (`id`, `user_email`, `message`, `timestamp`) VALUES
 (25, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-10 20:55:09'),
 (26, 'agbelusitomisi@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 06:53:00 to 2024-09-10 06:57:00.', '2024-09-10 20:55:09'),
 (27, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 10:51:00 to 2024-09-10 10:54:00.', '2024-09-10 20:55:09'),
-(28, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-10 11:00.', '2024-09-10 21:00:11');
+(28, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-10 11:00.', '2024-09-10 21:00:11'),
+(29, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-12 09:54:27'),
+(30, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-12 11:51:00 to 2024-09-12 23:51:00.', '2024-09-12 09:54:28'),
+(31, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 305 4th floor\' has been booked for 2024-09-12 11:55.', '2024-09-12 09:55:12'),
+(32, 'temidudu2003@gmail.com', 'Your ticket has been resolved.', '2024-09-12 19:35:39'),
+(33, 'agbelusitomisi@gmail.com', 'The resource \'Room 305 4th floor\' is now available and has been booked for you from  to .', '2024-09-12 22:51:03'),
+(34, 'temidudu2003@gmail.com', 'The resource \'Room 307 3rd floor\' is now available and has been booked for you from 2024-09-12 04:58:00 to 2024-09-12 04:58:00.', '2024-09-12 22:51:07'),
+(35, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-12 22:51:10');
 
 -- --------------------------------------------------------
 
@@ -147,12 +157,38 @@ INSERT INTO `notifications` (`id`, `user_email`, `message`, `timestamp`) VALUES
 CREATE TABLE `resources` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `type` varchar(100) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `available` tinyint(1) DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `resources`
+--
+
+INSERT INTO `resources` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'room 305 4th floor', '2024-09-12 22:52:57', '2024-09-12 22:52:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `school`
+--
+
+CREATE TABLE `school` (
+  `Roll number` int(11) NOT NULL,
+  `First Name` varchar(255) NOT NULL,
+  `Last Name` varchar(255) NOT NULL,
+  `Class` varchar(20) NOT NULL,
+  `Email` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `school`
+--
+
+INSERT INTO `school` (`Roll number`, `First Name`, `Last Name`, `Class`, `Email`) VALUES
+(202111068, 'Temidayo', 'Agbelusi', 'year 3', 'temidudu2003@gmail.com'),
+(202111069, 'Tomisin', 'Agbelusi', 'Year 3', 'Agbelusitomisin@gmail.com\r\n');
 
 -- --------------------------------------------------------
 
@@ -177,7 +213,12 @@ INSERT INTO `support tickets` (`id`, `email`, `subject`, `message`, `status`, `c
 (1, 'agbelusitomisin@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 19:42:56'),
 (2, 'temidudu2003@gmail.com', 'nn', 'm', 'Resolved', '2024-09-10 19:43:02'),
 (3, 'temidudu2003@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 19:44:49'),
-(4, 'temidudu2003@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 20:13:59');
+(4, 'temidudu2003@gmail.com', 'nn', 'n', 'Resolved', '2024-09-10 20:13:59'),
+(5, 'temidudu2003@gmail.com', 'mm', 'mn', 'Resolved', '2024-09-12 14:56:12'),
+(6, 'temidudu2003@gmail.com', 'nn', 'm', 'Resolved', '2024-09-12 18:30:31'),
+(7, 'temidudu2003@gmail.com', 'nn', 'm', 'Resolved', '2024-09-12 19:03:53'),
+(8, 'temidudu2003@gmail.com', 'nn', 'mm', 'Resolved', '2024-09-12 19:34:05'),
+(9, 'temidudu2003@gmail.com', 'nn', 'nn', 'Resolved', '2024-09-12 19:35:28');
 
 -- --------------------------------------------------------
 
@@ -186,11 +227,11 @@ INSERT INTO `support tickets` (`id`, `email`, `subject`, `message`, `status`, `c
 --
 
 CREATE TABLE `users` (
+  `Roll Number` int(10) NOT NULL,
   `First Name` varchar(30) NOT NULL,
   `Last Name` varchar(30) NOT NULL,
   `Email` varchar(30) NOT NULL,
   `DOB` date NOT NULL,
-  `Roll Number` int(10) NOT NULL,
   `class` varchar(255) NOT NULL,
   `role` varchar(50) NOT NULL DEFAULT '''user''',
   `Password` varchar(30) NOT NULL
@@ -200,10 +241,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`First Name`, `Last Name`, `Email`, `DOB`, `Roll Number`, `class`, `role`, `Password`) VALUES
-('juwon', 'Agbelusi', 'agbelusitomisin@gmail.com', '2024-09-20', 77, 'Year 3', '\'user\'', '0000'),
-('Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-10-05', 88, 'Year 3', '\'user\'', '0000'),
-('tomisin', 'Agbelusi', 'agbelusitomisi@gmail.com', '2024-09-13', 20192939, 'Year 2', '\'user\'', '1234');
+INSERT INTO `users` (`Roll Number`, `First Name`, `Last Name`, `Email`, `DOB`, `class`, `role`, `Password`) VALUES
+(202111068, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-09-20', 'Year 3', 'user', '0000');
 
 -- --------------------------------------------------------
 
@@ -275,6 +314,12 @@ ALTER TABLE `resources`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `school`
+--
+ALTER TABLE `school`
+  ADD PRIMARY KEY (`Roll number`);
+
+--
 -- Indexes for table `support tickets`
 --
 ALTER TABLE `support tickets`
@@ -300,13 +345,13 @@ ALTER TABLE `waitlist`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `contact us`
@@ -318,25 +363,31 @@ ALTER TABLE `contact us`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `Employee_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Employee_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `resources`
 --
 ALTER TABLE `resources`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `school`
+--
+ALTER TABLE `school`
+  MODIFY `Roll number` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202111070;
 
 --
 -- AUTO_INCREMENT for table `support tickets`
 --
 ALTER TABLE `support tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -348,7 +399,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `waitlist`
 --
 ALTER TABLE `waitlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

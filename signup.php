@@ -13,33 +13,54 @@ if (isset($_POST['submit'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $class = mysqli_real_escape_string($conn, $_POST['class']);
+    $course = isset($_POST['course']) ? mysqli_real_escape_string($conn, $_POST['course']) : ''; // Get the course value from the form, if available
 
-    // Check if email already exists
-    $checkEmailQuery = "SELECT * FROM users WHERE Email = '$email'";
-    $result = mysqli_query($conn, $checkEmailQuery);
+    // Check if the student exists in the school table with all provided information
+    $checkStudentQuery = "
+        SELECT * 
+        FROM school 
+        WHERE `Roll Number` = '$rnumber' 
+        AND `First Name` = '$fname'
+        AND `Last Name` = '$lname'
+        AND `class` = '$class'
+        AND `Email` = '$email'
+    ";
 
-    if (mysqli_num_rows($result) > 0) {
-        // Email already exists
-        $message = "The email address is already in use. Please use a different email.";
+    $studentResult = mysqli_query($conn, $checkStudentQuery);
+
+    if (mysqli_num_rows($studentResult) == 0) {
+        // No matching student found in the school table
+        $message = "The information you provided does not match the records in our system. Please check your details and try again.";
         $message_class = 'error'; // Add error class
     } else {
-        // SQL query to insert data into the 'users' table
-        $sql = "INSERT INTO users (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `class`) 
-                VALUES ('$fname', '$lname', '$dob', '$rnumber', '$email', '$password', '$class')";
+        // Check if email already exists in the users table
+        $checkEmailQuery = "SELECT * FROM users WHERE Email = '$email'";
+        $result = mysqli_query($conn, $checkEmailQuery);
 
-        // Execute the query
-        if (mysqli_query($conn, $sql)) {
-            $message = "New record created successfully.";
-            $message_class = 'success'; // Add success class
-            header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
+        if (mysqli_num_rows($result) > 0) {
+            // Email already exists
+            $message = "The email address is already in use. Please use a different email.";
+            $message_class = 'error'; // Add error class
         } else {
-            // Check for duplicate entry error
-            if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
-                $message = "Duplicate entry detected. Please use a different roll number.";
-                $message_class = 'error'; // Add error class
+            // SQL query to insert data into the 'users' table (no course field)
+            $sql = "
+                INSERT INTO users (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `class`, `role`) 
+                VALUES ('$fname', '$lname', '$dob', '$rnumber', '$email', '$password', '$class', 'user')";
+
+            // Execute the query
+            if (mysqli_query($conn, $sql)) {
+                $message = "New record created successfully.";
+                $message_class = 'success'; // Add success class
+                header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
             } else {
-                $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
-                $message_class = 'error'; // Add error class
+                // Check for duplicate entry error
+                if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
+                    $message = "Duplicate entry detected. Please use a different roll number.";
+                    $message_class = 'error'; // Add error class
+                } else {
+                    $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
+                    $message_class = 'error'; // Add error class
+                }
             }
         }
     }
@@ -48,6 +69,8 @@ if (isset($_POST['submit'])) {
 // Close the connection
 mysqli_close($conn);
 ?>
+
+
 
 
 

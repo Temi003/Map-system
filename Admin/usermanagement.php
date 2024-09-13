@@ -333,27 +333,28 @@ $conn->close();
 #chart-container {
     display: none; /* Initially hidden */
     width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 450px;
+    margin: 50px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    height: 150vh; /* Allow height to adjust based on content */
+    height: 100vh; /* Allow height to adjust based on content */
     margin-top: 25px; /* Space above the container */
     text-align: center; /* Center align content within the container */
 }
 
 /* Center the chart within the container and move it up */
 #resourceChart {
-    margin-top: -30px; /* Adjust as needed to move it up */
-    width: 200px;
+    margin-top: 0; /* Adjust as needed */
+    width: 20%; /* Ensure it scales properly */
 }
+
 
         .chart-buttons {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            margin: 0 auto;
         }
 
         .chart-buttons button {
@@ -388,6 +389,7 @@ $conn->close();
         }
         .report-section {
     display: none; /* Initially hidden */
+    margin-top: 10px;
 }
     </style>
 </head>
@@ -483,7 +485,7 @@ $conn->close();
         <div id="chart-container">
             <div class="chart-buttons">
                 <button id="printChartBtn" class="btn btn-print">Print Chart</button>
-                <button id="downloadChartBtn" class="btn btn-download">Download Chart</button><br>
+                <button id="downloadChartBtn" class="btn btn-download">Download Chart</button>
                 
             </div>
             <div class="report-section" id="report-section">

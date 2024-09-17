@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 13, 2024 at 10:45 PM
+-- Generation Time: Sep 17, 2024 at 09:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -24,6 +24,35 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `admin notify`
+--
+
+CREATE TABLE `admin notify` (
+  `ID` int(10) NOT NULL,
+  `user_email` varchar(255) NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin notify`
+--
+
+INSERT INTO `admin notify` (`ID`, `user_email`, `message`, `timestamp`) VALUES
+(67, 'temidudu2003@gmail.com', 'Booking for resource \'Lab 2\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 20:57:00).', '2024-09-17 18:57:47'),
+(69, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Lab 2\' has been booked for 2024-09-17 09:04.', '2024-09-17 19:05:20'),
+(71, 'temidudu2003@gmail.com', 'Booking for resource \'Lab 2\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 21:05:00).', '2024-09-17 19:15:53'),
+(73, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Lab 2\' has been booked for 2024-09-17 09:16.', '2024-09-17 19:16:21'),
+(75, 'temidudu2003@gmail.com', 'Booking for resource \'Lab 2\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 21:16:00).', '2024-09-17 19:17:09'),
+(77, 'temi20@gmail.com', 'Booking for resource \'Lab 2\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 21:16:00).', '2024-09-17 19:17:23'),
+(78, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-17 09:17.', '2024-09-17 19:17:24'),
+(80, 'temidudu2003@gmail.com', 'Booking for resource \'Room 307 3rd floor\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 09:17:00).', '2024-09-17 19:17:56'),
+(82, 'temi20@gmail.com', 'Booking for resource \'Room 307 3rd floor\' by temidudu2003@gmail.com has expired (ended at 2024-09-17 09:17:00).', '2024-09-17 19:18:08'),
+(83, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-17 09:18.', '2024-09-17 19:18:09');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -40,13 +69,9 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `resource`, `email`, `Begin time`, `End time`) VALUES
-(34, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL),
-(35, 'Lab 2', 'agbelusitomisi@gmail.com', NULL, NULL),
-(37, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-10 11:00:00', '2024-09-10 11:01:00'),
-(38, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL),
-(41, 'Room 305 4th floor', 'agbelusitomisi@gmail.com', NULL, NULL),
-(42, 'Room 307 3rd floor', 'temidudu2003@gmail.com', NULL, NULL),
-(43, 'Lab 2', 'agbelusitomisin@gmail.com', NULL, NULL);
+(57, 'Lab 2', 'temidudu2003@gmail.com', '2024-09-17 09:16:00', '2024-09-17 21:16:00'),
+(58, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-17 09:17:00', '2024-09-17 09:17:00'),
+(59, 'Room 307 3rd floor', 'temidudu2003@gmail.com', '2024-09-17 09:18:00', '2024-09-17 21:18:00');
 
 -- --------------------------------------------------------
 
@@ -135,18 +160,9 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_email`, `message`, `timestamp`) VALUES
-(24, 'temidudu2003@gmail.com', 'The resource \'Room 307 3rd floor\' is now available and has been booked for you from 2024-09-10 10:46:00 to 2024-09-10 10:48:00.', '2024-09-10 20:47:07'),
-(25, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-10 20:55:09'),
-(26, 'agbelusitomisi@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 06:53:00 to 2024-09-10 06:57:00.', '2024-09-10 20:55:09'),
-(27, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-10 10:51:00 to 2024-09-10 10:54:00.', '2024-09-10 20:55:09'),
-(28, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-10 11:00.', '2024-09-10 21:00:11'),
-(29, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-12 09:54:27'),
-(30, 'temidudu2003@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from 2024-09-12 11:51:00 to 2024-09-12 23:51:00.', '2024-09-12 09:54:28'),
-(31, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 305 4th floor\' has been booked for 2024-09-12 11:55.', '2024-09-12 09:55:12'),
-(32, 'temidudu2003@gmail.com', 'Your ticket has been resolved.', '2024-09-12 19:35:39'),
-(33, 'agbelusitomisi@gmail.com', 'The resource \'Room 305 4th floor\' is now available and has been booked for you from  to .', '2024-09-12 22:51:03'),
-(34, 'temidudu2003@gmail.com', 'The resource \'Room 307 3rd floor\' is now available and has been booked for you from 2024-09-12 04:58:00 to 2024-09-12 04:58:00.', '2024-09-12 22:51:07'),
-(35, 'agbelusitomisin@gmail.com', 'The resource \'Lab 2\' is now available and has been booked for you from  to .', '2024-09-12 22:51:10');
+(44, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Lab 2\' has been booked for 2024-09-17 09:16.', '2024-09-17 19:16:21'),
+(45, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-17 09:17.', '2024-09-17 19:17:24'),
+(46, 'temidudu2003@gmail.com', 'Booking successful! The resource \'Room 307 3rd floor\' has been booked for 2024-09-17 09:18.', '2024-09-17 19:18:09');
 
 -- --------------------------------------------------------
 
@@ -263,16 +279,15 @@ CREATE TABLE `waitlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `waitlist`
---
-
-INSERT INTO `waitlist` (`id`, `resource`, `email`, `signup_time`, `Begin time`, `End time`) VALUES
-(6, 'Lab 2', 'agbelusitomisin@gmail.com', '2024-09-09 17:20:42', NULL, NULL),
-(7, 'Room 305 4th floor', 'agbelusitomisi@gmail.com', '2024-09-09 20:22:56', NULL, NULL);
-
---
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admin notify`
+--
+ALTER TABLE `admin notify`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `unique_notification` (`message`,`timestamp`);
 
 --
 -- Indexes for table `bookings`
@@ -345,10 +360,16 @@ ALTER TABLE `waitlist`
 --
 
 --
+-- AUTO_INCREMENT for table `admin notify`
+--
+ALTER TABLE `admin notify`
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+
+--
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -372,7 +393,7 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `resources`

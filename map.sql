@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 13, 2024 at 10:19 PM
+-- Generation Time: Sep 13, 2024 at 10:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -188,7 +188,8 @@ CREATE TABLE `school` (
 
 INSERT INTO `school` (`Roll number`, `First Name`, `Last Name`, `Class`, `Email`) VALUES
 (202111068, 'Temidayo', 'Agbelusi', 'year 3', 'temidudu2003@gmail.com'),
-(202111069, 'Tomisin', 'Agbelusi', 'Year 3', 'agbelusitomisin@gmail.com\r\n');
+(202111069, 'Tomisin', 'Agbelusi', 'Year 3', 'agbelusitomisin@gmail.com'),
+(202111070, 'Babajuwon', 'Agbelusi', 'year 1', 'juwon@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -242,7 +243,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`Roll Number`, `First Name`, `Last Name`, `Email`, `DOB`, `class`, `role`, `Password`) VALUES
-(202111068, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-09-20', 'Year 3', 'user', '0000');
+(202111068, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-09-27', 'Year 3', 'user', '0000'),
+(202111069, 'tomisin', 'agbelusi', 'agbelusitomisin@gmail.com', '2024-09-21', 'year 3', 'user', '0000'),
+(202111070, 'babajuwon', 'agbelusi', 'juwon@gmail.com', '2024-09-18', 'year 1', 'user', '0000');
 
 -- --------------------------------------------------------
 
@@ -381,7 +384,7 @@ ALTER TABLE `resources`
 -- AUTO_INCREMENT for table `school`
 --
 ALTER TABLE `school`
-  MODIFY `Roll number` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202111070;
+  MODIFY `Roll number` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202111071;
 
 --
 -- AUTO_INCREMENT for table `support tickets`
@@ -393,7 +396,7 @@ ALTER TABLE `support tickets`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `Roll Number` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202111069;
+  MODIFY `Roll Number` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202111071;
 
 --
 -- AUTO_INCREMENT for table `waitlist`

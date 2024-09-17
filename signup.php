@@ -3,7 +3,6 @@ include("connection.php");
 
 $message = ''; // Initialize an empty message variable
 $message_class = ''; // Initialize an empty message class variable
-
 if (isset($_POST['submit'])) {
     // Get form data
     $fname = mysqli_real_escape_string($conn, $_POST['firstname']);
@@ -28,23 +27,31 @@ if (isset($_POST['submit'])) {
 
     $studentResult = mysqli_query($conn, $checkStudentQuery);
 
-    if (mysqli_num_rows($studentResult) == 0) {
+    if (!$studentResult) {
+        // Query failed
+        $message = "Error checking student records: " . mysqli_error($conn);
+        $message_class = 'error'; // Add error class
+    } elseif (mysqli_num_rows($studentResult) == 0) {
         // No matching student found in the school table
         $message = "The information you provided does not match the records in our system. Please check your details and try again.";
         $message_class = 'error'; // Add error class
     } else {
         // Check if email already exists in the users table
-        $checkEmailQuery = "SELECT * FROM users WHERE Email = '$email'";
+        $checkEmailQuery = "SELECT * FROM users WHERE `Email` = '$email'";
         $result = mysqli_query($conn, $checkEmailQuery);
 
-        if (mysqli_num_rows($result) > 0) {
+        if (!$result) {
+            // Query failed
+            $message = "Error checking email records: " . mysqli_error($conn);
+            $message_class = 'error'; // Add error class
+        } elseif (mysqli_num_rows($result) > 0) {
             // Email already exists
             $message = "The email address is already in use. Please use a different email.";
             $message_class = 'error'; // Add error class
         } else {
             // SQL query to insert data into the 'users' table (no course field)
             $sql = "
-                INSERT INTO users (`First Name`, `Last Name`, `DOB`, `Roll Number`, `Email`, `Password`, `class`, `role`) 
+                INSERT INTO users (`First Name`, `Last Name`, DOB, `Roll Number`, `Email`, Password, `class`, role) 
                 VALUES ('$fname', '$lname', '$dob', '$rnumber', '$email', '$password', '$class', 'user')";
 
             // Execute the query
@@ -58,7 +65,7 @@ if (isset($_POST['submit'])) {
                     $message = "Duplicate entry detected. Please use a different roll number.";
                     $message_class = 'error'; // Add error class
                 } else {
-                    $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
+                    $message = "Error: " . mysqli_error($conn);
                     $message_class = 'error'; // Add error class
                 }
             }
@@ -69,7 +76,6 @@ if (isset($_POST['submit'])) {
 // Close the connection
 mysqli_close($conn);
 ?>
-
 
 
 

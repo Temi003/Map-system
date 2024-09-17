@@ -322,6 +322,9 @@ $result = $conn->query("SELECT id, message, subject, email, status FROM `support
                 <a class="nav-link" href="ticket.php">Tickets</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="adminnotify.php">Notifications</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="usermanagement.php">User management</a>
             </li>
             <li class="nav-item">

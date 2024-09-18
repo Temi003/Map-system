@@ -12,38 +12,58 @@ function notifyAllAdmins($message) {
     // Prepare a query to fetch admin emails
     $stmt = $conn->prepare("SELECT email FROM employees WHERE role = 'admin'");
     if (!$stmt) {
-        die("Error preparing SQL: " . $conn->error);
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
     }
     $stmt->execute();
     $result = $stmt->get_result();
 
-    while ($row = $result->fetch_assoc()) {
-        $admin_email = $row['email'];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $admin_email = $row['email'];
 
-        // Check if a similar notification already exists to avoid duplicates
-        $stmtCheck = $conn->prepare("SELECT id FROM `admin notify` WHERE user_email = ? AND message = ?");
-        if (!$stmtCheck) {
-            die("Error preparing SQL: " . $conn->error);
-        }
-        $stmtCheck->bind_param("ss", $admin_email, $message);
-        $stmtCheck->execute();
-        $stmtCheck->store_result();
+            // Check if a similar notification already exists to avoid duplicates
+            $stmtCheck = $conn->prepare("SELECT id FROM `admin notify` WHERE user_email = ? AND message = ?");
+            if (!$stmtCheck) {
+                error_log("Error preparing SQL: " . $conn->error);
+                continue;
+            }
+            $stmtCheck->bind_param("ss", $admin_email, $message);
+            $stmtCheck->execute();
+            $stmtCheck->store_result();
 
-        // If no existing notification is found, insert a new notification
-        if ($stmtCheck->num_rows == 0) {
-            $stmtNotify = $conn->prepare("INSERT IGNORE INTO `admin notify` (user_email, message, timestamp) VALUES (?, ?, NOW())");
-            if (!$stmtNotify) {
-                die("Error preparing SQL for admin notification: " . $conn->error);
+            if ($stmtCheck->num_rows == 0) {
+                $stmtNotify = $conn->prepare("INSERT IGNORE INTO `admin notify` (user_email, message, timestamp) VALUES (?, ?, NOW())");
+                if (!$stmtNotify) {
+                    error_log("Error preparing SQL for admin notification: " . $conn->error);
+                    continue;
+                }
+                $stmtNotify->bind_param("ss", $admin_email, $message);
+                if (!$stmtNotify->execute()) {
+                    error_log("Error executing SQL for admin notification: " . $stmtNotify->error);
+                }
+                $stmtNotify->close();
             }
-            $stmtNotify->bind_param("ss", $admin_email, $message);
-            if (!$stmtNotify->execute()) {
-                die("Error executing SQL for admin notification: " . $stmtNotify->error);
-            }
-            $stmtNotify->close();
+            $stmtCheck->close(); // Close the check statement
         }
-        $stmtCheck->close(); // Close the check statement
     }
 
+    $stmt->close();
+}
+
+// Function to notify users
+function notifyUser($email, $message) {
+    global $conn;
+
+    $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+    if (!$stmt) {
+        error_log("Error preparing SQL for user notification: " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("ss", $email, $message);
+    if (!$stmt->execute()) {
+        error_log("Error executing SQL for user notification: " . $stmt->error);
+    }
     $stmt->close();
 }
 
@@ -53,12 +73,13 @@ function checkExpiredBookings() {
     $current_time = date('Y-m-d H:i:s');
 
     $stmt = $conn->prepare(
-        "SELECT bookings.email, bookings.resource, bookings.`End time`
+        "SELECT email, resource, `End time`
          FROM bookings
-         WHERE bookings.`End time` <= ?"
+         WHERE `End time` <= ?"
     );
     if (!$stmt) {
-        die("Error preparing SQL: " . $conn->error);
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
     }
     $stmt->bind_param("s", $current_time);
     $stmt->execute();
@@ -81,8 +102,51 @@ function checkExpiredBookings() {
     $stmt->close();
 }
 
-// Call the function to check for expired bookings whenever the script runs
+// Function to remove expired waitlist entries and notify users
+function removeExpiredWaitlistEntries() {
+    global $conn;
+    $current_time = date('Y-m-d H:i:s');
+
+    // Query to select expired waitlist entries
+    $stmt = $conn->prepare("SELECT email, resource, `Begin time`, `End time` FROM waitlist WHERE `End time` <= ?");
+    if (!$stmt) {
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("s", $current_time);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $user_email = $row['email'];
+            $resource = $row['resource'];
+            $end_time = $row['End time'];
+
+            // Remove expired entry from waitlist
+            $stmtDelete = $conn->prepare("DELETE FROM waitlist WHERE email = ? AND resource = ? AND `End time` = ?");
+            if (!$stmtDelete) {
+                error_log("Error preparing SQL for deletion: " . $conn->error);
+                continue;
+            }
+            $stmtDelete->bind_param("sss", $user_email, $resource, $end_time);
+            if (!$stmtDelete->execute()) {
+                error_log("Error executing SQL for deletion: " . $stmtDelete->error);
+            }
+            $stmtDelete->close();
+
+            // Notify user about the removal
+            $notificationMessage = "Your waitlist entry for the resource '$resource' has expired and been removed.";
+            notifyUser($user_email, $notificationMessage);
+        }
+    }
+
+    $stmt->close();
+}
+
+// Call the function to check for expired bookings and remove expired waitlist entries
 checkExpiredBookings();
+removeExpiredWaitlistEntries();
 
 // Check if user is logged in
 if (!isset($_SESSION['email'])) {
@@ -93,10 +157,10 @@ if (!isset($_SESSION['email'])) {
         $resource = $_POST['resource'];
         $begintime = $_POST['begintime'];
         $endtime = $_POST['endtime'];
-
+    
         // Get current user email from session
         $current_user_email = $_SESSION['email'];
-
+    
         if ($email !== $current_user_email) {
             // User is trying to book for someone else
             $alertMessage = "<p class='alert alert-danger'>You can only book for yourself.</p>";
@@ -122,102 +186,101 @@ if (!isset($_SESSION['email'])) {
                    AND bookings.`End time` > ?"
             );
             if (!$stmt) {
-                die("Error preparing SQL: " . $conn->error);
-            }
-            $stmt->bind_param("sss", $resource, $endtime, $begintime);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                error_log("Error preparing SQL: " . $conn->error);
+                $alertMessage = "<p class='alert alert-danger'>Error checking bookings.</p>";
+            } else {
+                $stmt->bind_param("sss", $resource, $endtime, $begintime);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                $existing_booking_class = $result->fetch_assoc()['class'];
-                if ($existing_booking_class !== $user_class) {
-                    // Check if someone from a different class is already on the waitlist for the same time
-                    $stmt->close();
-                    $stmt = $conn->prepare(
-                        "SELECT users.class 
-                         FROM waitlist 
-                         JOIN users ON waitlist.email = users.email 
-                         WHERE waitlist.resource = ? 
-                           AND waitlist.`Begin time` < ? 
-                           AND waitlist.`End time` > ?"
-                    );
-                    $stmt->bind_param("sss", $resource, $endtime, $begintime);
-                    $stmt->execute();
-                    $waitlist_result = $stmt->get_result();
+                if ($result->num_rows > 0) {
+                    $existing_booking_class = $result->fetch_assoc()['class'];
+                    if ($existing_booking_class !== $user_class) {
+                        // Check if someone from a different class is already on the waitlist for the same time
+                        $stmt->close();
+                        $stmt = $conn->prepare(
+                            "SELECT users.class 
+                             FROM waitlist 
+                             JOIN users ON waitlist.email = users.email 
+                             WHERE waitlist.resource = ? 
+                               AND waitlist.`Begin time` < ? 
+                               AND waitlist.`End time` > ?"
+                        );
+                        $stmt->bind_param("sss", $resource, $endtime, $begintime);
+                        $stmt->execute();
+                        $waitlist_result = $stmt->get_result();
 
-                    if ($waitlist_result->num_rows > 0) {
-                        $alertMessage = "<p class='alert alert-danger'>This resource has already been waitlisted by another class for this time. Please select a different time.</p>";
+                        if ($waitlist_result->num_rows > 0) {
+                            $alertMessage = "<p class='alert alert-danger'>This resource has already been waitlisted by another class for this time. Please select a different time.</p>";
+                        } else {
+                            $stmt->close();
+                            $stmt = $conn->prepare("INSERT INTO waitlist (email, resource, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
+                            $stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
+                            if ($stmt->execute()) {
+                                $alertMessage = "<p class='alert alert-warning'>The resource is booked by another class, so you have been added to the waitlist.</p>";
+                            } else {
+                                $alertMessage = "<p class='alert alert-danger'>Error: Could not add you to the waitlist.</p>";
+                            }
+                        }
                     } else {
                         $stmt->close();
-                        $stmt = $conn->prepare("INSERT INTO waitlist (email, resource, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
+                        $stmt = $conn->prepare("INSERT INTO bookings (email, resource, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
                         $stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
                         if ($stmt->execute()) {
-                            $alertMessage = "<p class='alert alert-warning'>The resource is booked by another class, so you have been added to the waitlist.</p>";
+                            // Notify admins about the successful booking
+                            $formatted_booking_time = date('Y-m-d H:i', strtotime($begintime));
+                            $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
+                            notifyAllAdmins($notificationMessage);
+
+                            // Set alert message for successful booking
+                            $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
                         } else {
-                            $alertMessage = "<p class='alert alert-danger'>Error: Could not add you to the waitlist.</p>";
+                            $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
                         }
                     }
                 } else {
                     $stmt->close();
                     $stmt = $conn->prepare("INSERT INTO bookings (email, resource, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
-                    $stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
-                    if ($stmt->execute()) {
-                        // Notify admins about the successful booking
-                        $formatted_booking_time = date('Y-m-d H:i', strtotime($begintime));
-                        $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
-                        notifyAllAdmins($notificationMessage);
-
-                        // Debugging output
-                        echo "<p>Notification Message: $notificationMessage</p>"; // For debugging
-
-                        $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+                    if (!$stmt) {
+                        error_log("Error preparing SQL: " . $conn->error);
+                        $alertMessage = "<p class='alert alert-danger'>Error preparing booking statement.</p>";
                     } else {
-                        $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
+                        $stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
+                        if ($stmt->execute()) {
+                            $formatted_booking_time = date('Y-m-d H:i', strtotime($begintime));
+                            $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
+                            notifyAllAdmins($notificationMessage);
+
+                            $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
+                        } else {
+                            $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
+                        }
                     }
-                }
-            } else {
-                $stmt->close();
-                $stmt = $conn->prepare("INSERT INTO bookings (email, resource, `Begin time`, `End time`) VALUES (?, ?, ?, ?)");
-                if (!$stmt) {
-                    die("Error preparing SQL: " . $conn->error);
-                }
-                $stmt->bind_param("ssss", $email, $resource, $begintime, $endtime);
-                if ($stmt->execute()) {
-                    $formatted_booking_time = date('Y-m-d H:i', strtotime($begintime));
-                    $notificationMessage = "Booking successful! The resource '$resource' has been booked for $formatted_booking_time.";
-                    notifyAllAdmins($notificationMessage);
-
-
-                    $alertMessage = "<p class='alert alert-success'>Booking successful!</p>";
-                } else {
-                    $alertMessage = "<p class='alert alert-danger'>Error: Could not complete booking.</p>";
                 }
             }
         }
-
-        // Check and print $notificationMessage before inserting into the notifications table
-        if (!isset($notificationMessage) || empty($notificationMessage)) {
-            die("Error: Notification message is not set or is empty.");
-        }
-
-        // Prepare the insert statement for the notifications table
-        $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
-        if (!$stmt) {
-            die("Error preparing SQL: " . $conn->error); // Debugging: Show SQL error
-        }
-
-        // Bind the parameters and execute the statement
-        $stmt->bind_param("ss", $email, $notificationMessage);
-        if (!$stmt->execute()) {
-            die("Error executing SQL for notifications: " . $stmt->error); // Debugging: Show SQL error
-        }
-
-        $stmt->close(); // Closing statement after use
     }
 }
 
-$conn->close(); // Close the connection
+// Ensure $notificationMessage is set only if needed
+if (isset($notificationMessage) && !empty($notificationMessage)) {
+    // Prepare the insert statement for the notifications table
+    $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+    if (!$stmt) {
+        error_log("Error preparing SQL: " . $conn->error);
+    } else {
+        $stmt->bind_param("ss", $email, $notificationMessage);
+        if (!$stmt->execute()) {
+            error_log("Error executing SQL for notifications: " . $stmt->error);
+        }
+        $stmt->close();
+    }
+}
 ?>
+
+
+
+
 
 
 
@@ -454,10 +517,12 @@ $conn->close(); // Close the connection
         <form action="book.php" method="post" class="booking-form">
             <h1>Book a Resource</h1>
             
-            <!-- Display the alert message -->
-            <?php if ($alertMessage != ''): ?>
-                <?php echo $alertMessage; ?>
-            <?php endif; ?>
+            <?php
+        // Display the alert message if it's set
+        if (isset($alertMessage)) {
+            echo $alertMessage;
+        }
+        ?>
             
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -467,6 +532,8 @@ $conn->close(); // Close the connection
                     <option value=""></option>
                     <option value="Room 305 4th floor">Room 305 4th floor</option>
                     <option value="Room 307 3rd floor">Room 307 3rd floor</option>
+                    <option value="Room 310 4th floor">Room 310 4th floor</option>
+                    <option value="Room 312 4th floor">Room 312 4th floor</option>
                     <option value="Lab 2">Lab 2</option>
                 </select>
             

@@ -347,6 +347,8 @@ $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
                     <option value=""></option>
                     <option value="Room 305 4th floor">Room 305 4th floor</option>
                     <option value="Room 307 3rd floor">Room 307 3rd floor</option>
+                    <option value="Room 310 4th floor">Room 310 4th floor</option>
+                    <option value="Room 312 4th floor">Room 312 4th floor</option>
                     <option value="Lab 2">Lab 2</option>
                 </select><br>
                 <label for="email">Email:</label>

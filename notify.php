@@ -10,6 +10,148 @@ if (!isset($_SESSION['email'])) {
 
 $user_email = $_SESSION['email'];
 
+function notifyAllAdmins($message) {
+    global $conn;
+
+    // Prepare a query to fetch admin emails
+    $stmt = $conn->prepare("SELECT email FROM employees WHERE role = 'admin'");
+    if (!$stmt) {
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $admin_email = $row['email'];
+
+            // Check if a similar notification already exists to avoid duplicates
+            $stmtCheck = $conn->prepare("SELECT id FROM `admin notify` WHERE user_email = ? AND message = ?");
+            if (!$stmtCheck) {
+                error_log("Error preparing SQL: " . $conn->error);
+                continue;
+            }
+            $stmtCheck->bind_param("ss", $admin_email, $message);
+            $stmtCheck->execute();
+            $stmtCheck->store_result();
+
+            if ($stmtCheck->num_rows == 0) {
+                $stmtNotify = $conn->prepare("INSERT IGNORE INTO `admin notify` (user_email, message, timestamp) VALUES (?, ?, NOW())");
+                if (!$stmtNotify) {
+                    error_log("Error preparing SQL for admin notification: " . $conn->error);
+                    continue;
+                }
+                $stmtNotify->bind_param("ss", $admin_email, $message);
+                if (!$stmtNotify->execute()) {
+                    error_log("Error executing SQL for admin notification: " . $stmtNotify->error);
+                }
+                $stmtNotify->close();
+            }
+            $stmtCheck->close(); // Close the check statement
+        }
+    }
+
+    $stmt->close();
+}
+
+// Function to notify users
+function notifyUser($email, $message) {
+    global $conn;
+
+    $stmt = $conn->prepare("INSERT INTO notifications (user_email, message) VALUES (?, ?)");
+    if (!$stmt) {
+        error_log("Error preparing SQL for user notification: " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("ss", $email, $message);
+    if (!$stmt->execute()) {
+        error_log("Error executing SQL for user notification: " . $stmt->error);
+    }
+    $stmt->close();
+}
+
+// Check for expired bookings and notify admin
+function checkExpiredBookings() {
+    global $conn;
+    $current_time = date('Y-m-d H:i:s');
+
+    $stmt = $conn->prepare(
+        "SELECT email, resource, `End time`
+         FROM bookings
+         WHERE `End time` <= ?"
+    );
+    if (!$stmt) {
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("s", $current_time);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $expiredBookingEmail = $row['email'];
+            $expiredResource = $row['resource'];
+            $expiredEndTime = $row['End time'];
+
+            // Format message for the notification
+            $adminNotificationMessage = "Booking for resource '$expiredResource' by $expiredBookingEmail has expired (ended at $expiredEndTime).";
+
+            // Notify all admins
+            notifyAllAdmins($adminNotificationMessage);
+        }
+    }
+
+    $stmt->close();
+}
+
+// Function to remove expired waitlist entries and notify users
+function removeExpiredWaitlistEntries() {
+    global $conn;
+    $current_time = date('Y-m-d H:i:s');
+
+    // Query to select expired waitlist entries
+    $stmt = $conn->prepare("SELECT email, resource, `Begin time`, `End time` FROM waitlist WHERE `End time` <= ?");
+    if (!$stmt) {
+        error_log("Error preparing SQL: " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("s", $current_time);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $user_email = $row['email'];
+            $resource = $row['resource'];
+            $end_time = $row['End time'];
+
+            // Remove expired entry from waitlist
+            $stmtDelete = $conn->prepare("DELETE FROM waitlist WHERE email = ? AND resource = ? AND `End time` = ?");
+            if (!$stmtDelete) {
+                error_log("Error preparing SQL for deletion: " . $conn->error);
+                continue;
+            }
+            $stmtDelete->bind_param("sss", $user_email, $resource, $end_time);
+            if (!$stmtDelete->execute()) {
+                error_log("Error executing SQL for deletion: " . $stmtDelete->error);
+            }
+            $stmtDelete->close();
+
+            // Notify user about the removal
+            $notificationMessage = "Your waitlist entry for the resource '$resource' has expired and been removed.";
+            notifyUser($user_email, $notificationMessage);
+        }
+    }
+
+    $stmt->close();
+}
+
+// Call the function to check for expired bookings and remove expired waitlist entries
+checkExpiredBookings();
+removeExpiredWaitlistEntries();
+
 // Function to fetch notifications and count for a specific user
 function getNotificationsForUser($user_email) {
     global $conn;

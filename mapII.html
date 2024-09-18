@@ -117,18 +117,17 @@ const ulkBounds = [
     [30.058, -1.918]  // Northeast corner of ULK boundary
 ];
 
+// Add directions control
 const directions = new MapboxDirections({
     accessToken: mapboxgl.accessToken,
     unit: 'metric',
     profile: 'mapbox/driving', // Adjust profile based on your preference
-    alternatives: false, // Ensure the shortest route is always selected
     controls: {
         inputs: true,  // Ensure inputs are enabled
         instructions: true,
         profileSwitcher: true
     }
 });
-
 
 // Add directions control to the map
 map.addControl(directions, 'top-left');
@@ -180,26 +179,13 @@ function successLocation(position) {
         originMarker.setLngLat(userCoordinates); // Update origin marker
         map.setCenter(userCoordinates); // Center the map on the device's location
         
-        // Disable origin input by overriding the default behavior
-directions.on('origin', event => {
-    // Prevent origin from being changed by user
-    const userCoordinates = directions.getOrigin().geometry.coordinates;
-    if (!isWithinUlk(userCoordinates)) {
-        directions.setOrigin(null); // Clear the origin if it's not within ULK
-    } else {
-        directions.setOrigin(userCoordinates); // Keep origin locked to user's location
-        originMarker.setLngLat(userCoordinates); // Update origin marker
-    }
-});
-
-// Disable the origin input field visually (if not already done)
-const originInput = document.querySelector('.mapbox-directions-origin-input');
-if (originInput) {
-    originInput.setAttribute('disabled', 'true');
-    originInput.setAttribute('placeholder', 'Origin: Your Location');
-    originInput.classList.add('mapbox-directions-origin-input');
-}
-
+        // Disable origin input
+        const originInput = document.querySelector('.mapbox-directions-origin-input');
+        if (originInput) {
+            originInput.setAttribute('disabled', 'true');
+            originInput.setAttribute('placeholder', 'Origin: Your Location');
+            originInput.classList.add('mapbox-directions-origin-input');
+        }
     } else {
         alert('You are not within the ULK campus.');
         setTimeout(() => {

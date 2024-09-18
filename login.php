@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $remember = isset($_POST['remember-me']); // Check if "Remember Me" is checked
 
     // Prepare and execute the query to find the user by email
-    $stmt = $conn->prepare("SELECT Email, Password, role, `First Name` FROM users WHERE Email = ?");
+    $stmt = $conn->prepare("SELECT Email, Password, Role FROM employees WHERE Email = ?");
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
@@ -22,15 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->store_result();
 
     if ($stmt->num_rows == 1) {
-        $stmt->bind_result($db_email, $db_password, $db_role, $db_firstname);
+        $stmt->bind_result($db_email, $db_password, $role);
         $stmt->fetch();
 
         // Compare the entered password directly with the stored password
         if ($password === $db_password) {
             // Set session variables
-            $_SESSION['firstname'] = $db_firstname; // Corrected
             $_SESSION['email'] = $email;
-            $_SESSION['role'] = $db_role; // Store role in session
+            $_SESSION['role'] = $role; // Store admin status in session
 
             // If "Remember Me" is checked, set a cookie for 1 day
             if ($remember) {
@@ -44,8 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = "Login successful! Redirecting...";
             $message_class = "success";
 
-            // Redirect to the management page
-            header("Location: management.php");
+            
+
+            // Redirect based on user role
+            if ($role) {
+                header("refresh:2; url=dashboard.php"); // Admin dashboard
+            } else {
+                header("refresh:2; url=management.php"); // User dashboard
+            }
             exit();
         } else {
             // Set error message and class
@@ -63,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="style.css">
     <style>
         .login-container {
-            margin: 1% auto;
+            margin: 2% auto;
             height: auto;
             max-width: 400px;
         }
@@ -92,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: white;
             font-size: 20px;
             position: absolute;
-            top: 110px;
+            top: 20px;
             left: 20px;
         }
         button[type="submit"] {
@@ -111,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </style>
 </head>
 <body>
-    <div class="menu">
+<div class="menu">
         <div class="logo">
             <img src="images/ulk logo 2.png" alt="">
             <h2>KIGALI INDEPENDENT UNIVERSITY (ULK)</h2>
@@ -124,17 +128,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </ul>
     </div>
     
-    <a href="menu.html" class="back-button">
-        <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
-    </a>
-    
     <div class="login-container">
-        <h2>User Login</h2>
+        <h2 style="margin-top: 8px;">Admin Login</h2>
 
         <!-- Display message if any -->
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo htmlspecialchars($error); ?>
+        <?php if (!empty($message)): ?>
+            <div class="alert alert-<?php echo htmlspecialchars($message_class); ?>" role="alert">
+                <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
 
@@ -157,9 +157,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <a href="forgetpassword.php">Forgot password?</a>
             </div>
             <div style="margin-top: 10px;">
-                New Student? <a href="signup.php">Sign up here.</a>
+                <a href="signup.php">Sign up here.</a>
             </div>
         </form>
     </div>
+    <script src="main.js"></script>
 </body>
 </html>

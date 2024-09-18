@@ -1,28 +1,38 @@
 <?php
 require 'connection.php'; // Include the connection file
 
+$message = ''; 
+$message_class = ''; 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
 
     // Validate email
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        // Check if email exists in database
-        $stmt = $conn->prepare("SELECT `Roll Number` FROM users WHERE Email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
+        // Prepare SQL statement
+        if ($stmt = $conn->prepare("SELECT `Password` FROM employees WHERE Email = ?")) {
+            // Bind parameters and execute
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
 
-        if ($stmt->num_rows > 0) {
-            $message = "Email is valid. Redirecting...";
-            $message_class = 'success'; 
-            // Redirect to update password page with email as query parameter
-            header("refresh:2; url=updatepassword.php?email=" . urlencode($email));
+            if ($stmt->num_rows > 0) {
+                $message = "Email is valid. Redirecting...";
+                $message_class = 'success'; 
+                // Redirect to update password page with email as query parameter
+                header("refresh:2; url=updatepassword.php?email=" . urlencode($email));
+                exit(); // Exit after redirect to prevent further code execution
+            } else {
+                $message = "Invalid email";
+                $message_class = 'error'; // Set error class
+            }
+
+            $stmt->close();
         } else {
-            $message = "Invalid email";
+            // Error preparing statement
+            $message = "Error preparing SQL statement: " . $conn->error;
             $message_class = 'error'; // Set error class
         }
-
-        $stmt->close();
     } else {
         $message = "Invalid email format";
         $message_class = 'error'; // Set error class

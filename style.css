@@ -8,6 +8,7 @@ body {
     height: 100%; /* Full height */
   }
   
+  
   /* Menu styling */
   .menu {
     width: 100%; /* Full width */
@@ -69,7 +70,7 @@ body {
     height: 86vh; /* Height relative to viewport height */
     text-align: left; /* Align text to the left */
     background-color: rgba(245, 245, 236, 0.67); /* Background color with transparency */
-    padding: 10px; /* Padding around content */
+    padding: 20px; /* Padding around content */
     box-sizing: border-box; /* Include padding in width/height calculations */
     overflow: hidden; /* Hide overflow content */
     z-index: 0; /* Z-index for stacking context */
@@ -132,57 +133,6 @@ body {
   .main .btn-locate:hover {
     background-color: #0099cc; /* Change background color on hover */
   }
-  
-  /* General button styling */
-  .button {
-    background-color: #00bfff; /* Background color */
-    color: black; /* Text color */
-    padding: 15px 30px; /* Padding inside button */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 20px; /* Font size */
-    cursor: pointer; /* Pointer cursor */
-    position: relative; /* Relative positioning */
-    left: 77%; /* Align to the right */
-    transform: translateX(-50%); /* Center horizontally */
-    margin-top: 20px; /* Margin above button */
-  }
-  
-  /* Page heading styling */
-  .page-heading {
-    text-align: center; /* Center align text */
-    font-size: 30px; /* Font size */
-    color: #0099cc; /* Font color */
-    margin: 20px 0; /* Margin above and below */
-  }
-  
-  /* Hover effect for map button */
-  .map-button:hover {
-    background-color: #017ba3; /* Change background color on hover */
-  }
-  
-  /* Styling for the menu main section */
-  .menu-main {
-    position: relative; /* Relative positioning */
-    display: flex; /* Flexbox layout */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    height: 86vh; /* Height relative to viewport height */
-    background-color: white; /* Background color */
-    overflow: hidden; /* Hide overflow content */
-  }
-  
-  /* Background video styling */
-  .bg-video {
-    position: absolute; /* Absolute positioning */
-    top: 0; /* Align to the top */
-    left: 0; /* Align to the left */
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    object-fit: cover; /* Cover the container */
-    z-index: -1; /* Stack below other content */
-  }
-  
   /* Menu options styling */
   .menu-options {
     display: flex; /* Flexbox layout */
@@ -212,11 +162,40 @@ body {
     margin-bottom: 20px; /* Margin below button */
     font-weight: bold; /* Bold font weight */
     transition: 2s; /* Transition duration */
+    margin: 0 auto;
   }
   
   /* Hover effect for menu button */
   .menu-button:hover {
     background-color: #0099cc; /* Change background color on hover */
+  }
+  
+  /* Map styling */
+  #map {
+    width: 100%; /* Full width */
+    height: 82vh; /* Height relative to viewport height */
+    border-radius: 5px; /* Rounded corners */
+    border: 2px solid black; /* Border styling */
+    position: absolute; /* Absolute positioning */
+    display: flex; /* Flexbox layout */
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+  }
+  
+  /* Container for the map */
+  .map-container {
+    position: relative; /* Relative positioning */
+    width: 99.5%; /* Width of the container */
+    height: 100%; /* Full height */
+  }
+  
+  /* Directions control styling */
+  .mapboxgl-ctrl-directions {
+    position: absolute; /* Absolute positioning */
+    top: 10px; /* Top alignment */
+    left: 10px; /* Left alignment */
+    width: 75%; /* Width of the control */
+    height: 50%; /* Height of the control */
   }
   
   /* Map styling */
@@ -259,6 +238,17 @@ body {
     color: #0099cc; /* Text color */
     margin-left: 50px; /* Margin to the left */
   }
+
+  /* Hamburger menu styling (hidden by default) */
+  .hamburger {
+    display: none; /* Hidden by default */
+    background: none; /* No background */
+    border: none; /* No border */
+    font-size: 30px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    color: #0099cc; /* Text color */
+    margin-left: 50px; /* Margin to the left */
+  }
   
   /* Side menu styling */
   .side-menu {
@@ -298,6 +288,7 @@ body {
     right: 25px; /* Right alignment */
     font-size: 36px; /* Font size */
     margin-left: 50px; /* Margin to the left */
+    color: white;
   }
   
   /* Background video styling */
@@ -319,13 +310,13 @@ body {
     border-radius: 8px; /* Rounded corners */
     text-align: center; /* Center text */
     justify-content: center; /* Center content */
-    margin: 0 auto; /* Center horizontally */
+    margin: 5% auto; /* Center horizontally */
   }
   
   /* Login container specific styling */
   .login-container {
     width: 450px; /* Width */
-    height: 80vh; /* Height relative to viewport height */
+    height: 70vh; /* Height relative to viewport height */
   }
   
   /* Signup container specific styling */
@@ -333,7 +324,32 @@ body {
     width: 700px; /* Width */
     height: 109vh; /* Height relative to viewport height */
   }
-    
+  /* .message.success {
+    color: green;
+    background-color: #e6ffe6;
+    border: 1px solid green;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .message.error {
+    color: red;
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+  } */
+  
+  
+  
   /* Grouping items */
   .group {
     display: flex; /* Flexbox layout */
@@ -390,7 +406,7 @@ body {
     font-size: 16px; /* Font size */
     margin-bottom: 20px; /* Margin below button */
   }
-  
+/*   
   /* Hover effect for general buttons */
   button:hover {
     background-color: #016080; /* Change background color on hover */
@@ -426,93 +442,6 @@ body {
     color: black; /* Font color */
     font-size: 40px; /* Font size */
     font-weight: bold; /* Bold font weight */
-  }
-  
-  /* Contact container styling */
-  .contact-container {
-    background-color: whitesmoke; /* Background color */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow */
-    max-width: 600px; /* Maximum width */
-  }
-  
-  /* Contact form styling */
-  .contact-form {
-    display: flex; /* Flexbox layout */
-    flex-direction: column; /* Stack items vertically */
-    gap: 15px; /* Gap between items */
-    max-width: 600px; /* Maximum width */
-    width: 100%; /* Full width */
-    margin: 0 auto; /* Center horizontally */
-  }
-  
-  /* Styling for name fields in the contact form */
-  .name-fields {
-    display: flex; /* Flexbox layout */
-    gap: 45px; /* Gap between fields */
-  }
-  
-  /* Individual name field styling */
-  .name-field {
-    flex: 1; /* Flex grow */
-  }
-  
-  /* Label styling within name field */
-  .name-field label {
-    display: block; /* Block display */
-    margin-bottom: 5px; /* Margin below label */
-  }
-  
-  /* Input styling within name field */
-  .name-field input {
-    width: 100%; /* Full width */
-  }
-  
-  /* Label styling within contact form */
-  .contact-form label {
-    font-weight: bold; /* Bold font weight */
-  }
-  
-  /* Input and textarea styling within contact form */
-  .contact-form input,
-  .contact-form textarea {
-    padding: 0.5rem; /* Padding inside fields */
-    border: 1px solid #ccc; /* Border styling */
-    border-radius: 4px; /* Rounded corners */
-    width: 100%; /* Full width */
-  }
-  
-  /* Textarea specific styling */
-  .contact-form textarea {
-    resize: vertical; /* Allow vertical resizing */
-  }
-  
-  /* Button styling within contact form */
-  .contact-form button {
-    padding: 0.5rem 1rem; /* Padding inside button */
-    border: none; /* Remove border */
-    background-color: #0099cc; /* Background color */
-    color: white; /* Text color */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    align-self: flex-start; /* Align to the start */
-  }
-  
-  /* Hover effect for contact form button */
-  .contact-form button:hover {
-    background-color: #016283; /* Change background color on hover */
-  }
-  
-  /* Contact heading styling */
-  .contact-h2 {
-    text-align: left; /* Align text to the left */
-    font-weight: 700; /* Bold font weight */
-    font-size: 2.5rem; /* Font
-  
-   size */
-    margin-left: 100px; /* Margin to the left */
-    margin-bottom: 1rem; /* Margin below heading */
   }
   
   /* Forgot password container styling */
@@ -575,120 +504,3 @@ body {
   button:hover {
     background-color: #0056b3; /* Change background color on hover */
   }
-  
-  
-  /* Responsive styling for iPads and larger devices (min-width: 768px) */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  .menu {
-    height: 12vh; /* Adjust height */
-  }
-  
-  .logo h2 {
-    font-size: 28px; /* Adjust font size */
-  }
-  
-  .main {
-    height: 82vh; /* Adjust height */
-    padding: 20px; /* Adjust padding */
-  }
-  
-  .main h1, .main h2 {
-    font-size: 36px; /* Adjust font size */
-  }
-  
-  .main p {
-    font-size: 18px; /* Adjust font size */
-  }
-  
-  .contact-container, .login-container, .signup-container {
-    width: 90%; /* Adjust width */
-  }
-  
-  .button, .btn-locate {
-    padding: 12px 24px; /* Adjust padding */
-  }
-  
-  .menu-options h1 {
-    font-size: 40px; /* Adjust font size */
-  }
-}
-
-/* Responsive styling for iPhone 14 Pro Max and iPhone XR (max-width: 430px) */
-@media screen and (max-width: 430px) {
-  .menu {
-    height: 10vh; /* Adjust height */
-  }
-  
-  .logo h2 {
-    font-size: 24px; /* Adjust font size */
-  }
-  
-  .main {
-    height: auto; /* Allow height to adjust */
-    padding: 10px; /* Adjust padding */
-  }
-  
-  .main h1, .main h2 {
-    font-size: 28px; /* Adjust font size */
-  }
-  
-  .main p {
-    font-size: 16px; /* Adjust font size */
-  }
-  
-  .contact-container, .login-container, .signup-container {
-    width: 95%; /* Adjust width */
-  }
-  
-  .button, .btn-locate {
-    padding: 10px 20px; /* Adjust padding */
-  }
-  
-  .menu-options h1 {
-    font-size: 32px; /* Adjust font size */
-  }
-  
-  .hamburger {
-    display: block; /* Ensure hamburger menu is visible */
-  }
-  
-  /* Additional adjustments */
-  .side-menu {
-    width: 75%; /* Adjust width for smaller screens */
-  }
-}
-
-/* Specific adjustments for iPhone XR (max-width: 414px) */
-@media screen and (max-width: 414px) {
-  .menu {
-    height: 8vh; /* Adjust height */
-  }
-  
-  .logo h2 {
-    font-size: 22px; /* Adjust font size */
-  }
-  
-  .main {
-    padding: 8px; /* Adjust padding */
-  }
-  
-  .main h1, .main h2 {
-    font-size: 24px; /* Adjust font size */
-  }
-  
-  .main p {
-    font-size: 14px; /* Adjust font size */
-  }
-  
-  .contact-container, .login-container, .signup-container {
-    width: 100%; /* Full width */
-  }
-  
-  .button, .btn-locate {
-    padding: 8px 16px; /* Adjust padding */
-  }
-  
-  .menu-options h1 {
-    font-size: 28px; /* Adjust font size */
-  }
-}

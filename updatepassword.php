@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_password = $_POST['new_password'];
 
     // Prepare and execute the update statement
-    $stmt = $conn->prepare("UPDATE users SET Password = ? WHERE Email = ?");
+    $stmt = $conn->prepare("UPDATE employees SET Password = ? WHERE Email = ?");
     $stmt->bind_param("ss", $new_password, $email);
 
     if ($stmt->execute()) {

@@ -35,10 +35,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch used resources
+// Fetch used resources (currently booked or have been booked and ended)
 $sql_used_resources = "SELECT COUNT(DISTINCT resource) as used_resources
                        FROM bookings
-                       WHERE `End time` >= NOW()";
+                       WHERE `End time` >= NOW() 
+                       OR `End time` < NOW()";
 
 $result_used_resources = $conn->query($sql_used_resources);
 
@@ -60,13 +61,12 @@ if (!$result_total_resources) {
 $total_resources_data = $result_total_resources->fetch_assoc();
 $total_resources = $total_resources_data['total_resources'];
 
-// Fetch unused resources
+// Fetch unused resources (resources in the resources table but not in the bookings table)
 $sql_unused_resources = "SELECT COUNT(*) as unused_resources
                          FROM resources
-                         WHERE id NOT IN (
+                         WHERE resource NOT IN (
                              SELECT DISTINCT resource
                              FROM bookings
-                             WHERE `End time` >= NOW()
                          )";
 
 $result_unused_resources = $conn->query($sql_unused_resources);
@@ -123,9 +123,9 @@ $conn->close();
             text-decoration: none;
         }
 
-        #sidebar .nav-link.active {
-            font-weight: bold;
-            color: white;
+        #sidebar .nav-link:hover{
+            font-size: 25px;
+            color: lightgray;
         }
 
         .dashboard-content {
@@ -423,6 +423,9 @@ $conn->close();
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="addclass.php">Add Class</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="addresource.php">Add resource</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>

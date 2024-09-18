@@ -252,6 +252,9 @@ $classes = $conn->query("SELECT `Course Name`, `Lecturer Name`, `Class Year`, `R
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="addresource.php">Add resource</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
             </li>
             <li class="nav-item">

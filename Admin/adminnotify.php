@@ -8,6 +8,98 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
+// Function to notify all admins
+function notifyAllAdmins($message) {
+    global $conn;
+
+    // Prepare a query to fetch admin emails
+    $stmt = $conn->prepare("SELECT email FROM employees WHERE role = 'admin'");
+    if (!$stmt) {
+        die("Error preparing SQL: " . $conn->error);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $admin_email = $row['email'];
+
+            // Debugging output
+            // echo "Notifying admin: $admin_email<br>";
+
+            // Check if a similar notification already exists to avoid duplicates
+            $stmtCheck = $conn->prepare("SELECT id FROM `admin notify` WHERE user_email = ? AND message = ?");
+            if (!$stmtCheck) {
+                die("Error preparing SQL: " . $conn->error);
+            }
+            $stmtCheck->bind_param("ss", $admin_email, $message);
+            $stmtCheck->execute();
+            $stmtCheck->store_result();
+
+            if ($stmtCheck->num_rows == 0) {
+                $stmtNotify = $conn->prepare("INSERT IGNORE INTO `admin notify` (user_email, message, timestamp) VALUES (?, ?, NOW())");
+                if (!$stmtNotify) {
+                    die("Error preparing SQL for admin notification: " . $conn->error);
+                }
+                $stmtNotify->bind_param("ss", $admin_email, $message);
+                if (!$stmtNotify->execute()) {
+                    die("Error executing SQL for admin notification: " . $stmtNotify->error);
+                }
+                $stmtNotify->close();
+            }
+            $stmtCheck->close(); // Close the check statement
+        }
+    } else {
+        // Debugging output
+        echo "No admins found.<br>";
+    }
+
+    $stmt->close();
+}
+
+// Check for expired bookings and notify admin
+function checkExpiredBookings() {
+    global $conn;
+    $current_time = date('Y-m-d H:i:s');
+
+    $stmt = $conn->prepare(
+        "SELECT bookings.email, bookings.resource, bookings.`End time`
+         FROM bookings
+         WHERE bookings.`End time` <= ?"
+    );
+    if (!$stmt) {
+        die("Error preparing SQL: " . $conn->error);
+    }
+    $stmt->bind_param("s", $current_time);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $expiredBookingEmail = $row['email'];
+            $expiredResource = $row['resource'];
+            $expiredEndTime = $row['End time'];
+
+            // Debugging output
+            // echo "Expired Booking Found: $expiredBookingEmail, $expiredResource, $expiredEndTime<br>";
+
+            // Format message for the notification
+            $adminNotificationMessage = "Booking for resource '$expiredResource' by $expiredBookingEmail has expired (ended at $expiredEndTime).";
+
+            // Notify all admins
+            notifyAllAdmins($adminNotificationMessage);
+        }
+    } else {
+        // Debugging output
+        // echo "No expired bookings found.<br>";
+    }
+
+    $stmt->close();
+}
+
+// Call the function to check for expired bookings whenever the script runs
+checkExpiredBookings();
+
 // Function to fetch all notifications
 function getAllNotifications() {
     global $conn;
@@ -275,6 +367,9 @@ function clearAllNotifications() {
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="addclass.php">Add Class</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="addresource.php">Add resource</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>

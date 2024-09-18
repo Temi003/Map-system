@@ -5,13 +5,17 @@ require 'connection.php'; // Database connection
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Update class details
-    $oldCourseName = $_POST['oldCourseName'];
-    $oldLecturerName = $_POST['oldLecturerName'];
-    $courseName = $_POST['courseName'];
-    $lecturerName = $_POST['lecturerName'];
-    $classYear = $_POST['classYear'];
-    $resource = $_POST['resource'];
+    // Retrieve and trim old class details from POST data
+    $oldCourseName = isset($_POST['oldCourseName']) ? trim($_POST['oldCourseName']) : '';
+    $oldLecturerName = isset($_POST['oldLecturerName']) ? trim($_POST['oldLecturerName']) : '';
+    $oldClassYear = isset($_POST['oldClassYear']) ? trim($_POST['oldClassYear']) : '';
+    $oldResource = isset($_POST['oldResource']) ? trim($_POST['oldResource']) : '';
+
+    // Retrieve new class details from form
+    $courseName = trim($_POST['courseName']);
+    $lecturerName = trim($_POST['lecturerName']);
+    $classYear = trim($_POST['classYear']);
+    $resource = trim($_POST['resource']);
     $startTime = $_POST['startTime'];
     $endTime = $_POST['endTime'];
 
@@ -19,23 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($startTime >= $endTime) {
         $message = "<div class='alert alert-danger' role='alert'>Error: Start time must be before end time.</div>";
     } else {
-        // Check if the record to be updated exists
-        $existsStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE `Course Name` = ? AND `Lecturer Name` = ?");
-        if ($existsStmt === false) {
-            die("Error preparing the exists statement: " . $conn->error);
-        }
+        // Check if the record to be updated exists (at least one field matches)
+$existsStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE LOWER(TRIM(`Course Name`)) = LOWER(?) OR LOWER(TRIM(`Lecturer Name`)) = LOWER(?) OR LOWER(TRIM(`Class Year`)) = LOWER(?) OR LOWER(TRIM(`Resource`)) = LOWER(?)");
+if ($existsStmt === false) {
+    die("Error preparing the exists statement: " . $conn->error);
+}
 
-        $existsStmt->bind_param("ss", $oldCourseName, $oldLecturerName);
-        $existsStmt->execute();
-        $existsStmt->bind_result($existsCount);
-        $existsStmt->fetch();
-        $existsStmt->close();
+$existsStmt->bind_param("ssss", $oldCourseName, $oldLecturerName, $oldClassYear, $oldResource);
+$existsStmt->execute();
+$existsStmt->bind_result($existsCount);
+$existsStmt->fetch();
+$existsStmt->close();
 
-        if ($existsCount === 0) {
-            $message = "<div class='alert alert-danger' role='alert'>Error: No matching class found to update.</div>";
+if ($existsCount === 0) {
+    $message = "<div class='alert alert-danger' role='alert'>Error: No matching class found to update.</div>";
+
         } else {
-            // Check for duplicates in other rows
-            $checkStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Resource` = ?) AND NOT (`Course Name` = ? AND `Lecturer Name` = ? AND `Class Year` = ? AND `Resource` = ?)");
+            // Check for duplicates in other rows, excluding the current class being updated
+            $checkStmt = $conn->prepare("SELECT COUNT(*) FROM classes WHERE LOWER(TRIM(`Course Name`)) = LOWER(?) AND LOWER(TRIM(`Lecturer Name`)) = LOWER(?) AND LOWER(TRIM(`Class Year`)) = LOWER(?) AND LOWER(TRIM(`Resource`)) = LOWER(?) AND NOT (LOWER(TRIM(`Course Name`)) = LOWER(?) AND LOWER(TRIM(`Lecturer Name`)) = LOWER(?) AND LOWER(TRIM(`Class Year`)) = LOWER(?) AND LOWER(TRIM(`Resource`)) = LOWER(?))");
             if ($checkStmt === false) {
                 die("Error preparing the check statement: " . $conn->error);
             }
@@ -50,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $message = "<div class='alert alert-danger' role='alert'>Error: A class with the same Course Name, Lecturer Name, Class Year, or Resource already exists.</div>";
             } else {
                 // Prepare the SQL query for update
-                $stmt = $conn->prepare("UPDATE classes SET `Course Name`=?, `Lecturer Name`=?, `Class Year`=?, `Resource`=?, `Start Time`=?, `End Time`=? WHERE `Course Name`=? AND `Lecturer Name`=? AND `Class Year`=? AND `Resource`=?");
+                $stmt = $conn->prepare("UPDATE classes SET `Course Name`=?, `Lecturer Name`=?, `Class Year`=?, `Resource`=?, `Start Time`=?, `End Time`=? WHERE LOWER(TRIM(`Course Name`)) = LOWER(?) OR LOWER(TRIM(`Lecturer Name`)) = LOWER(?) OR LOWER(TRIM(`Class Year`)) = LOWER(?) OR LOWER(TRIM(`Resource`)) = LOWER(?)");
                 if ($stmt === false) {
                     die("Error preparing the update statement: " . $conn->error);
                 }
@@ -160,13 +165,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     display: block;
     width: 25px;
     height: 3px;
-    background: red;
+    background: black;
     margin: 5px 0;
     transition: 0.3s;
 }
 
 #menu-toggle:checked ~ .hamburger-icon span:nth-child(1) {
     transform: rotate(-45deg) translate(-5px, 6px);
+    background: white;
 }
 
 #menu-toggle:checked ~ .hamburger-icon span:nth-child(2) {
@@ -175,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 #menu-toggle:checked ~ .hamburger-icon span:nth-child(3) {
     transform: rotate(45deg) translate(-5px, -6px);
+    background-color: white;
 }
 
         .table tbody tr {
@@ -269,6 +276,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="addresource.php">Add resource</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
             </li>
             <li class="nav-item">
@@ -296,37 +306,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <div class="dashboard-content">
-        <h2>Update Class</h2>
-        <?php if (isset($message)) echo $message; ?>
         <form action="updateclass.php" method="POST">
-            <input type="hidden" name="id" value="<?php echo isset($_GET['id']) ? htmlspecialchars($_GET['id']) : ''; ?>">
-            <input type="hidden" name="oldCourseName" value="<?php echo isset($_GET['courseName']) ? htmlspecialchars($_GET['courseName']) : ''; ?>">
-            <input type="hidden" name="oldLecturerName" value="<?php echo isset($_GET['lecturerName']) ? htmlspecialchars($_GET['lecturerName']) : ''; ?>">
+            <h2>Update Class</h2>
 
+            <!-- Display success or error message -->
+            <?php if (isset($message)) echo "<div class='message-container'>$message</div>"; ?>
+
+            <!-- Hidden fields to store old values for matching during update -->
+            <input type="hidden" name="oldCourseName" value="<?php echo isset($_GET['courseName']) ? htmlspecialchars(trim($_GET['courseName'])) : ''; ?>">
+            <input type="hidden" name="oldLecturerName" value="<?php echo isset($_GET['lecturerName']) ? htmlspecialchars(trim($_GET['lecturerName'])) : ''; ?>">
+            <input type="hidden" name="oldClassYear" value="<?php echo isset($_GET['classYear']) ? htmlspecialchars(trim($_GET['classYear'])) : ''; ?>">
+            <input type="hidden" name="oldResource" value="<?php echo isset($_GET['classroom']) ? htmlspecialchars(trim($_GET['classroom'])) : ''; ?>">
+
+            <!-- Form fields for new data -->
             <div class="mb-3">
                 <label for="courseName" class="form-label">Course Name</label>
-                <input type="text" class="form-control" id="courseName" name="courseName" value="<?php echo isset($_GET['courseName']) ? htmlspecialchars($_GET['courseName']) : ''; ?>" required>
+                <input type="text" class="form-control" id="courseName" name="courseName" value="<?php echo isset($_GET['courseName']) ? htmlspecialchars(trim($_GET['courseName'])) : ''; ?>" required>
             </div>
+
             <div class="mb-3">
                 <label for="lecturerName" class="form-label">Lecturer Name</label>
-                <input type="text" class="form-control" id="lecturerName" name="lecturerName" value="<?php echo isset($_GET['lecturerName']) ? htmlspecialchars($_GET['lecturerName']) : ''; ?>" required>
+                <input type="text" class="form-control" id="lecturerName" name="lecturerName" value="<?php echo isset($_GET['lecturerName']) ? htmlspecialchars(trim($_GET['lecturerName'])) : ''; ?>" required>
             </div>
+
             <div class="mb-3">
                 <label for="classYear" class="form-label">Class Year</label>
-                <input type="text" class="form-control" id="classYear" name="classYear" value="<?php echo isset($_GET['classYear']) ? htmlspecialchars($_GET['classYear']) : ''; ?>" required>
+                <input type="text" class="form-control" id="classYear" name="classYear" value="<?php echo isset($_GET['classYear']) ? htmlspecialchars(trim($_GET['classYear'])) : ''; ?>" required>
             </div>
+
             <div class="mb-3">
                 <label for="classroom" class="form-label">Resource</label>
-                <input type="text" class="form-control" id="classroom" name="resource" value="<?php echo isset($_GET['classroom']) ? htmlspecialchars($_GET['classroom']) : ''; ?>" required>
+                <input type="text" class="form-control" id="classroom" name="resource" value="<?php echo isset($_GET['classroom']) ? htmlspecialchars(trim($_GET['classroom'])) : ''; ?>" required>
             </div>
+
             <div class="mb-3">
                 <label for="startTime" class="form-label">Start Time</label>
-                <input type="time" class="form-control" id="startTime" name="startTime" value="<?php echo isset($_GET['startTime']) ? htmlspecialchars($_GET['startTime']) : ''; ?>" required>
+                <input type="time" class="form-control" id="startTime" name="startTime" value="<?php echo isset($_GET['startTime']) ? htmlspecialchars(trim($_GET['startTime'])) : ''; ?>" required>
             </div>
+
             <div class="mb-3">
                 <label for="endTime" class="form-label">End Time</label>
-                <input type="time" class="form-control" id="endTime" name="endTime" value="<?php echo isset($_GET['endTime']) ? htmlspecialchars($_GET['endTime']) : ''; ?>" required>
+                <input type="time" class="form-control" id="endTime" name="endTime" value="<?php echo isset($_GET['endTime']) ? htmlspecialchars(trim($_GET['endTime'])) : ''; ?>" required>
             </div>
+
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>

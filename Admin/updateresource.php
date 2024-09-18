@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $availability = isset($_POST['availability']) ? 1 : 0; // Handle checkbox
 
     // Update resource availability
-    $stmt = $conn->prepare("UPDATE resources SET available = ? WHERE name = ?");
+    $stmt = $conn->prepare("UPDATE resources SET available = ? WHERE resource = ?");
     $stmt->bind_param("is", $availability, $resource);
 
     if ($stmt->execute()) {
@@ -276,6 +276,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="addresource.php">Add resource</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="manageclass.php">Manage Classes</a>
             </li>
             <li class="nav-item">
@@ -319,6 +322,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <option value=""></option>
                         <option value="Room 305 4th floor">Room 305 4th floor</option>
                         <option value="Room 307 3rd floor">Room 307 3rd floor</option>
+                        <option value="Room 310 4th floor">Room 310 4th floor</option>
+                        <option value="Room 312 4th floor">Room 312 4th floor</option>
                         <option value="Lab 2">Lab 2</option>
                     </select>
                 </div>

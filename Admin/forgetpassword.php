@@ -1,41 +1,73 @@
 <?php
 require 'connection.php'; // Include the connection file
+require '../vendor/autoload.php'; // Include Google Authenticator library
 
+use Sonata\GoogleAuthenticator\GoogleAuthenticator;
+use Sonata\GoogleAuthenticator\GoogleQrUrl;
+
+$ga = new GoogleAuthenticator();
 $message = ''; 
 $message_class = ''; 
+$email_verified = false; // Flag to track email verification
+
+session_start(); // Start session at the beginning
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    $email = $_POST['email'] ?? '';
+    $otp = $_POST['otp'] ?? '';
 
     // Validate email
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         // Prepare SQL statement
-        if ($stmt = $conn->prepare("SELECT `Password` FROM employees WHERE Email = ?")) {
-            // Bind parameters and execute
+        if ($stmt = $conn->prepare("SELECT `Password`, `ga_secret` FROM employees WHERE Email = ?")) {
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $stmt->store_result();
+            $stmt->bind_result($password, $ga_secret);
+            $stmt->fetch();
 
             if ($stmt->num_rows > 0) {
-                $message = "Email is valid. Redirecting...";
+                $email_verified = true; // Email has been verified
+
+                if (empty($ga_secret)) {
+                    $ga_secret = $ga->generateSecret();
+                    if ($update_stmt = $conn->prepare("UPDATE employees SET ga_secret = ? WHERE Email = ?")) {
+                        $update_stmt->bind_param("ss", $ga_secret, $email);
+                        $update_stmt->execute();
+                        $update_stmt->close();
+                    }
+                }
+
+                $qrCodeUrl = GoogleQrUrl::generate('YourAppName', $ga_secret, 'YourDomain.com');
+                $_SESSION['email'] = $email;
+                $_SESSION['ga_secret'] = $ga_secret;
+
+                $message = "Scan the QR code with Google Authenticator and enter the OTP to continue.";
                 $message_class = 'success'; 
-                // Redirect to update password page with email as query parameter
-                header("refresh:2; url=updatepassword.php?email=" . urlencode($email));
-                exit(); // Exit after redirect to prevent further code execution
             } else {
-                $message = "Invalid email";
-                $message_class = 'error'; // Set error class
+                $message = "Invalid email.";
+                $message_class = 'error';
             }
 
             $stmt->close();
         } else {
-            // Error preparing statement
             $message = "Error preparing SQL statement: " . $conn->error;
-            $message_class = 'error'; // Set error class
+            $message_class = 'error'; 
+        }
+    } elseif (!empty($otp) && isset($_SESSION['ga_secret'])) {
+        // Verify OTP
+        if ($ga->checkCode($_SESSION['ga_secret'], $otp)) {
+            $message = "OTP verified! Redirecting to update password page.";
+            $message_class = 'success';
+            header("refresh:2; url=updatepassword.php?email=" . urlencode($_SESSION['email']));
+            exit();
+        } else {
+            $message = "Invalid OTP. Please try again.";
+            $message_class = 'error';
         }
     } else {
-        $message = "Invalid email format";
-        $message_class = 'error'; // Set error class
+        $message = "Invalid email format.";
+        $message_class = 'error'; 
     }
 }
 
@@ -78,7 +110,7 @@ $conn->close();
             font-weight: bold;
             color: black;
         }
-        .form-container input[type="email"] {
+        .form-container input[type="email"], .otp-form input[type="text"]{
             padding: 10px;
             width: 100%;
             max-width: 300px;
@@ -154,6 +186,24 @@ $conn->close();
                     <?php echo htmlspecialchars($message); ?>
                 </div>
             <?php endif; ?>
+
+            <?php if ($email_verified): ?>
+            <form action="" method="post" class="otp-form">
+                <label for="otp">Enter OTP from Google Authenticator:</label>
+                <input type="text" id="otp" name="otp" placeholder="Enter your OTP" required>
+                <input type="submit" value="Verify OTP">
+            </form>
+        <?php endif; ?>
+    </div>
+</div>
+
+<?php 
+if (isset($_SESSION['ga_secret'])) {
+    echo "<div class='text-center' style='margin-bottom: 50px;'>";
+    echo "<img src='{$qrCodeUrl}' alt='QR Code' />";
+    echo "</div>";
+}
+?>
         </div>
     </div>
 </body>

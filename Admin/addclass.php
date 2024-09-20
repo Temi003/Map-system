@@ -242,6 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <a class="nav-link" href="dashboard.php">Dashboard</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="register.php"> Student Registration</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="addclass.php">Add Class</a>
             </li>
             <li class="nav-item">

@@ -1,37 +1,67 @@
 <?php
 require 'connection.php';
 
+$message = ''; // Initialize message variable
+$message_class = ''; // Initialize message class variable
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if email is passed via GET
     if (!isset($_GET['email'])) {
         die("Email parameter missing.");
     }
+
     $email = $_GET['email'];
     $new_password = $_POST['new_password'];
 
-    // Prepare and execute the update statement
-    $stmt = $conn->prepare("UPDATE employees SET Password = ? WHERE Email = ?");
-    $stmt->bind_param("ss", $new_password, $email);
-
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            $message = "Password updated successfully";
-            $message_class = 'success'; // Set success class
-            header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
-        } else {
-            $message = "Please use a different password";
-            $message_class = 'error'; // Set error class
-        }
-    } else {
-        $message = "Failed to update password: " . $stmt->error;
-        $message_class = 'error'; // Set error class
-    }
-
+    // Retrieve the current password from the database
+    $stmt = $conn->prepare("SELECT Password FROM users WHERE Email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($current_password);
+    $stmt->fetch();
     $stmt->close();
+
+    // Check if the new password is the same as the current password
+    if ($new_password === $current_password) {
+        $message = "New password cannot be the same as the current password.";
+        $message_class = 'error'; // Set error class
+    } else {
+        // Password validation (complexity and length)
+        if (strlen($new_password) < 8 || 
+            !preg_match('/[A-Z]/', $new_password) ||  // At least one uppercase letter
+            !preg_match('/[a-z]/', $new_password) ||  // At least one lowercase letter
+            !preg_match('/[0-9]/', $new_password) ||  // At least one digit
+            !preg_match('/[!@#$%^&*]/', $new_password)) {  // At least one special character
+            $message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*).";
+            $message_class = 'error'; // Set error class
+        } else {
+            // Prepare and execute the update statement
+            $stmt = $conn->prepare("UPDATE users SET Password = ? WHERE Email = ?");
+            $stmt->bind_param("ss", $new_password, $email);
+
+            if ($stmt->execute()) {
+                if ($stmt->affected_rows > 0) {
+                    $message = "Password updated successfully.";
+                    $message_class = 'success'; // Set success class
+                    header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
+                    exit; // Stop further script execution after redirect
+                } else {
+                    $message = "Failed to update password. Please try again.";
+                    $message_class = 'error'; // Set error class
+                }
+            } else {
+                $message = "Failed to update password: " . $stmt->error;
+                $message_class = 'error'; // Set error class
+            }
+
+            $stmt->close();
+        }
+    }
 }
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

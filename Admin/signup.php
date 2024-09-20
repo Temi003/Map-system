@@ -10,25 +10,37 @@ if (isset($_POST['submit'])) {
     $lname = mysqli_real_escape_string($conn, $_POST['lastname']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $role = mysqli_real_escape_string($conn, $_POST['role']);
+    // Set role to admin by default
+    $role = 'admin';
 
-    // SQL query to insert data into the 'users' table
-    $sql = "INSERT INTO employees (`First Name`, `Last Name`, `Email`, `Password`,`Role` ) 
-            VALUES ('$fname', '$lname', '$email', '$password', '$role')";
-
-    // Execute the query
-    if (mysqli_query($conn, $sql)) {
-        $message = "New record created successfully.";
-        $message_class = 'success'; // Add success class
-        header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
+    // Password validation (complexity and length)
+    if (strlen($password) < 8 || 
+        !preg_match('/[A-Z]/', $password) ||  // At least one uppercase letter
+        !preg_match('/[a-z]/', $password) ||  // At least one lowercase letter
+        !preg_match('/[0-9]/', $password) ||  // At least one digit
+        !preg_match('/[!@#$%^&*]/', $password)) {  // At least one special character
+        $message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*).";
+        $message_class = 'error'; // Add error class
     } else {
-        // Check for duplicate entry error
-        if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
-            $message = "Duplicate entry detected. Please use a different roll number.";
-            $message_class = 'error'; // Add error class
+        // SQL query to insert data into the 'employees' table
+        $sql = "INSERT INTO employees (`First Name`, `Last Name`, `Email`, `Password`, `Role`) 
+                VALUES ('$fname', '$lname', '$email', '$password', '$role')";
+
+        // Execute the query
+        if (mysqli_query($conn, $sql)) {
+            $message = "New record created successfully.";
+            $message_class = 'success'; // Add success class
+            header("refresh:2; url=login.php"); // Redirect to login.php after 2 seconds
+            exit; // Stop further script execution after redirect
         } else {
-            $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
-            $message_class = 'error'; // Add error class
+            // Check for duplicate entry error
+            if (mysqli_errno($conn) == 1062) { // 1062 is the MySQL error code for duplicate entry
+                $message = "Duplicate entry detected. Please use a different email.";
+                $message_class = 'error'; // Add error class
+            } else {
+                $message = "Error: " . $sql . "<br>" . mysqli_error($conn);
+                $message_class = 'error'; // Add error class
+            }
         }
     }
 }
@@ -36,7 +48,6 @@ if (isset($_POST['submit'])) {
 // Close the connection
 mysqli_close($conn);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,16 +60,10 @@ mysqli_close($conn);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        .signup-container{
+        .signup-container {
             height: auto;
             margin: 20px auto;
         }
-        #role {
-        border: grey; /* Remove the black border */
-        background-color: white; /* Optional: adjust background color if needed */
-        padding: 10px; /* Adjust padding if necessary */
-        box-sizing: border-box; /* Include padding in width/height calculations */
-    }
         .back-button {
             width: 50px;
             height: 50px;
@@ -90,38 +95,37 @@ mysqli_close($conn);
         </ul>
     </div>
     <a href="login.php" class="back-button">
-    <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
+        <i class="fa-solid fa-arrow-left" style="color: #ffffff;"></i>
     </a>
     <div class="signup-container">
         <h2>Admin Sign Up</h2>
 
         <div class="message">
-    <?php if ($message != ''): ?>
-        <p style="
-            color: <?php echo ($message_class == 'success') ? 'green' : 'red'; ?>;
-            background-color: <?php echo ($message_class == 'success') ? '#e6ffe6' : '#ffe6e6'; ?>;
-            border: 1px solid <?php echo ($message_class == 'success') ? 'green' : 'red'; ?>;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            margin-top: 10px;">
-            <?php echo $message; ?>
-        </p>
-    <?php endif; ?>
-</div>
-
+            <?php if ($message != ''): ?>
+                <p style="
+                    color: <?php echo ($message_class == 'success') ? 'green' : 'red'; ?>;
+                    background-color: <?php echo ($message_class == 'success') ? '#e6ffe6' : '#ffe6e6'; ?>;
+                    border: 1px solid <?php echo ($message_class == 'success') ? 'green' : 'red'; ?>;
+                    font-size: 16px;
+                    font-weight: bold;
+                    padding: 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                    margin-top: 10px;">
+                    <?php echo $message; ?>
+                </p>
+            <?php endif; ?>
+        </div>
 
         <form action="" method="post">
-                <div class="input-group">
-                    <label for="first-name">First Name</label>
-                    <input type="text" id="first-name" name="firstname" placeholder="Enter your First name" required>
-                </div>
-                <div class="input-group">
-                    <label for="last-name">Last Name</label>
-                    <input type="text" id="last-name" name="lastname" placeholder="Enter your Last name" required>
-                </div>
+            <div class="input-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="firstname" placeholder="Enter your First name" required>
+            </div>
+            <div class="input-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="lastname" placeholder="Enter your Last name" required>
+            </div>
             <div class="row">
                 <div class="input-group">
                     <label for="dob">DOB</label>
@@ -132,18 +136,10 @@ mysqli_close($conn);
                     <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                 </div>
             </div>
-                <div class="input-group">
-        <label for="role">Role</label>
-        <select id="role" name="role" required>
-        <option value=""></option>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select>
-    </div>
-                <div class="input-group">
-                    <label for="new-password">Password</label>
-                    <input type="password" id="new-password" name="password" placeholder="Enter your password" required>
-                </div>
+            <div class="input-group">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" name="password" placeholder="Enter your password" required>
+            </div>
             <button type="submit" name="submit">Sign Up</button>
         </form>
     </div>

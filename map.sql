@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2024 at 07:00 PM
+-- Generation Time: Oct 02, 2024 at 02:53 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -126,17 +126,20 @@ CREATE TABLE `employees` (
   `Last Name` varchar(30) NOT NULL,
   `Email` varchar(30) NOT NULL,
   `Password` varchar(20) NOT NULL,
-  `Role` varchar(10) NOT NULL
+  `Role` varchar(10) NOT NULL,
+  `failed_attempts` int(11) DEFAULT 0,
+  `lockout_time` datetime DEFAULT NULL,
+  `ga_secret` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`Employee_ID`, `First Name`, `Last Name`, `Email`, `Password`, `Role`) VALUES
-(1, 'Temidayo', 'Agbelusi', 'agbelusitemidayo@gmail.com', '12345', '0'),
-(2, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '00000', 'admin'),
-(3, 'yemi', 'Agbelusi', 'temi20@gmail.com', '0000', 'admin');
+INSERT INTO `employees` (`Employee_ID`, `First Name`, `Last Name`, `Email`, `Password`, `Role`, `failed_attempts`, `lockout_time`, `ga_secret`) VALUES
+(1, 'Temidayo', 'Agbelusi', 'agbelusitemidayo@gmail.com', '12345', '0', 0, NULL, NULL),
+(2, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '00000', 'admin', 0, NULL, '2YITOBGQUXBPMOYW'),
+(3, 'yemi', 'Agbelusi', 'temi20@gmail.com', '0000', 'admin', 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -189,7 +192,8 @@ INSERT INTO `resources` (`id`, `resource`, `created_at`, `updated_at`, `availabl
 (3, 'room 310 4th floor', '2024-09-18 12:26:09', '2024-09-18 12:26:33', 0),
 (4, 'room 320 5th floor', '2024-09-18 12:42:41', '2024-09-18 12:42:41', 0),
 (5, 'room 311 4th floor', '2024-09-18 13:52:17', '2024-09-18 13:52:17', 1),
-(6, 'room 312 4th floor', '2024-09-18 13:53:14', '2024-09-18 13:53:14', 1);
+(6, 'room 312 4th floor', '2024-09-18 13:53:14', '2024-09-18 13:53:14', 1),
+(7, 'bb', '2024-09-18 17:48:16', '2024-09-18 17:48:16', 1);
 
 -- --------------------------------------------------------
 
@@ -258,17 +262,20 @@ CREATE TABLE `users` (
   `DOB` date NOT NULL,
   `class` varchar(255) NOT NULL,
   `role` varchar(50) NOT NULL DEFAULT '''user''',
-  `Password` varchar(30) NOT NULL
+  `Password` varchar(30) NOT NULL,
+  `failed_attempts` int(11) DEFAULT 0,
+  `lockout_time` datetime DEFAULT NULL,
+  `ga_secret` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`Roll Number`, `First Name`, `Last Name`, `Email`, `DOB`, `class`, `role`, `Password`) VALUES
-(202111068, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-09-27', 'Year 3', 'user', '0000'),
-(202111069, 'tomisin', 'agbelusi', 'agbelusitomisin@gmail.com', '2024-09-21', 'year 3', 'user', '0000'),
-(202111070, 'babajuwon', 'agbelusi', 'juwon@gmail.com', '2024-09-18', 'year 1', 'user', '0000');
+INSERT INTO `users` (`Roll Number`, `First Name`, `Last Name`, `Email`, `DOB`, `class`, `role`, `Password`, `failed_attempts`, `lockout_time`, `ga_secret`) VALUES
+(202111068, 'Temidayo', 'Agbelusi', 'temidudu2003@gmail.com', '2024-09-27', 'Year 3', 'user', '0000', 0, NULL, 'KAW4CPYBS4GUXUF6'),
+(202111069, 'tomisin', 'agbelusi', 'agbelusitomisin@gmail.com', '2024-09-21', 'year 3', 'user', '0000', 0, NULL, NULL),
+(202111070, 'babajuwon', 'agbelusi', 'juwon@gmail.com', '2024-09-18', 'year 1', 'user', '0000', 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -407,7 +414,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `resources`
 --
 ALTER TABLE `resources`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `school`
